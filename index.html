@@ -1,0 +1,2464 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRUTAL_KMS // Secure Key Management System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts - Space Grotesk (Neo Brutalism perfect match) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        brutalNeon: '#EAEE44', // Neon Yellow
+                        brutalCyan: '#38BDF8', // Cyan
+                        brutalPink: '#F43F5E', // Hot Pink
+                        brutalLilac: '#C084FC', // Soft Lilac
+                        brutalGreen: '#4ADE80', // Mint Green
+                        brutalDark: '#111111',
+                        brutalBgDark: '#1E1E1E',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Neo Brutalism Utility Classes */
+        .brutal-border {
+            border: 4px solid #000000;
+        }
+        .brutal-shadow {
+            box-shadow: 6px 6px 0px 0px #000000;
+        }
+        .brutal-shadow-sm {
+            box-shadow: 3px 3px 0px 0px #000000;
+        }
+        .brutal-shadow-pink {
+            box-shadow: 6px 6px 0px 0px #F43F5E;
+            border: 4px solid #000000;
+        }
+        .brutal-btn {
+            border: 4px solid #000000;
+            box-shadow: 4px 4px 0px 0px #000000;
+            transition: all 0.15s ease-in-out;
+        }
+        .brutal-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px 0px #000000;
+        }
+        .brutal-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px 0px #000000;
+        }
+        /* Custom scrollbar for brutalist look */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F3F4F6;
+            border-left: 4px solid #000000;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #111111;
+            border-left: 4px solid #000000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #EAEE44;
+            border: 3px solid #000000;
+        }
+    </style>
+</head>
+<body class="bg-[#F3F4F6] text-black font-sans dark:bg-[#121212] dark:text-white min-h-screen transition-colors duration-200">
+
+    <!-- TOP GLOBAL MAINTENANCE/BROADCAST BANNER -->
+    <div id="global-announcement-banner" class="hidden brutal-border border-t-0 border-l-0 border-r-0 bg-brutalPink text-black px-4 py-2 text-center font-bold text-sm flex justify-between items-center z-50">
+        <span class="mx-auto flex items-center gap-2"><i class="fa-solid fa-bullhorn animate-bounce"></i> <span id="banner-message">Attention: System update scheduled in 2 hours!</span></span>
+        <button onclick="document.getElementById('global-announcement-banner').classList.add('hidden')" class="text-black hover:scale-110"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- MAIN CONTEXT WRAPPER -->
+    <div id="app-wrapper">
+        <!-- APP LOADING SKELETON -->
+        <div id="app-loading" class="fixed inset-0 bg-brutalNeon flex flex-col justify-center items-center z-50 brutal-border m-4">
+            <div class="bg-white p-8 brutal-border brutal-shadow max-w-sm text-center relative">
+                <h1 class="text-3xl font-extrabold tracking-wider mb-4 animate-pulse text-black">BRUTAL_KMS</h1>
+                <div class="w-16 h-16 border-8 border-black border-t-brutalLilac rounded-full animate-spin mx-auto mb-4"></div>
+                <p class="text-sm font-bold text-black uppercase tracking-widest">Initializing Secure Firewalls...</p>
+                
+                <!-- Emergency Bypass UI Button -->
+                <div id="loading-bypass-btn" class="hidden mt-4 pt-4 border-t-4 border-black border-dashed">
+                    <p class="text-[10px] font-bold text-red-600 uppercase mb-2">Firebase takes too long to respond. Maybe credentials are invalid?</p>
+                    <button onclick="emergencyBypassLoading()" class="w-full bg-brutalPink text-white font-extrabold py-2 text-xs uppercase brutal-btn">
+                        Bypass Loading Loop
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AUTHENTICATION CONTAINER (LOGIN & REGISTER) -->
+        <div id="auth-container" class="hidden min-h-screen flex items-center justify-center p-4">
+            <div class="w-full max-w-md bg-white text-black p-8 brutal-border brutal-shadow relative">
+                <!-- Retro Design Element -->
+                <div class="absolute -top-6 -right-6 w-12 h-12 bg-brutalCyan brutal-border rounded-full flex items-center justify-center font-bold">KMS</div>
+                <div class="absolute -bottom-6 -left-6 w-16 h-6 bg-brutalPink brutal-border text-xs font-bold text-center leading-5 text-white uppercase tracking-widest">SECURE</div>
+                
+                <!-- Tab Switching -->
+                <div class="flex border-b-4 border-black mb-6">
+                    <button id="auth-tab-login" onclick="setAuthMode('login')" class="flex-1 py-3 font-extrabold text-center bg-brutalNeon border-r-4 border-black text-sm tracking-wider">LOGIN</button>
+                    <button id="auth-tab-register" onclick="setAuthMode('register')" class="flex-1 py-3 font-extrabold text-center bg-white text-sm tracking-wider">REGISTER</button>
+                </div>
+
+                <h2 id="auth-header-title" class="text-4xl font-extrabold mb-1 tracking-tight">SYSTEM_LOGIN</h2>
+                <p id="auth-header-subtitle" class="text-gray-600 font-bold mb-6 border-b-2 border-black pb-2 text-xs uppercase">ENTER DECRYPTION CREDENTIALS</p>
+
+                <!-- Toast Warning Inside Modal -->
+                <div id="auth-error-msg" class="hidden p-3 bg-brutalPink text-white font-bold mb-4 brutal-border">
+                    <i class="fa-solid fa-triangle-exclamation mr-2"></i> <span id="auth-error-text">Error message here</span>
+                </div>
+
+                <form id="auth-form" onsubmit="event.preventDefault(); handleAuthSubmission();">
+                    <!-- Username field (Only visible in Register mode) -->
+                    <div id="register-username-wrapper" class="mb-4 hidden">
+                        <label class="block text-sm font-extrabold uppercase tracking-wider mb-2">Profile Username</label>
+                        <input type="text" id="auth-username" class="w-full p-3 brutal-border bg-white font-bold outline-none focus:bg-yellow-50 focus:ring-2 focus:ring-black" placeholder="alex_master">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-extrabold uppercase tracking-wider mb-2">Email Address</label>
+                        <input type="email" id="auth-email" required class="w-full p-3 brutal-border bg-white font-bold outline-none focus:bg-yellow-50 focus:ring-2 focus:ring-black" placeholder="admin@brutal.kms">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-extrabold uppercase tracking-wider mb-2">Master Key Password</label>
+                        <div class="relative">
+                            <input type="password" id="auth-password" required class="w-full p-3 brutal-border bg-white font-bold outline-none focus:bg-yellow-50 focus:ring-2 focus:ring-black" placeholder="••••••••">
+                            <button type="button" onclick="togglePasswordVisibility('auth-password')" class="absolute right-4 top-4 text-black hover:scale-110"><i class="fa-regular fa-eye"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Role selector field (Only visible in Register mode) -->
+                    <div id="register-role-wrapper" class="mb-6 hidden">
+                        <label class="block text-sm font-extrabold uppercase tracking-wider mb-2">Select System Role</label>
+                        <select id="auth-role" class="w-full p-3 brutal-border bg-white font-bold outline-none focus:bg-yellow-50 focus:ring-2 focus:ring-black">
+                            <option value="admin">Administrator (Full Control)</option>
+                            <option value="reseller">Reseller Partner (Credit System)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" id="auth-btn" class="w-full bg-brutalNeon text-black font-extrabold py-3 uppercase tracking-widest brutal-btn text-lg">
+                        <i class="fa-solid fa-key mr-2"></i> Initialize Auth
+                    </button>
+                </form>
+
+                <div class="mt-6 pt-4 border-t-4 border-black border-dashed text-xs font-semibold text-gray-500 text-center">
+                    COMPATIBLE WITH NATIVE API CLIENT V2 // SECURED BY FIRESTORE
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN SYSTEM INTERFACE (DASHBOARD) -->
+        <div id="main-interface" class="hidden min-h-screen flex flex-col md:flex-row">
+            
+            <!-- RESPONSIVE SIDEBAR (NEO BRUTALISM) -->
+            <aside class="w-full md:w-64 bg-white dark:bg-brutalDark text-black dark:text-white brutal-border border-t-0 border-l-0 md:border-r-4 md:border-b-0 flex flex-col z-20">
+                <!-- Branding Header -->
+                <div class="p-4 brutal-border border-t-0 border-l-0 border-r-0 bg-brutalNeon text-black flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-extrabold tracking-tighter">BRUTAL_KMS</h1>
+                        <span class="text-xs font-bold bg-black text-white px-2 py-0.5 rounded">v2.6-PREVIEW</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleDarkMode()" class="p-2 brutal-border bg-white hover:bg-gray-100 rounded text-black"><i class="fa-solid fa-moon"></i></button>
+                    </div>
+                </div>
+
+                <!-- User Session Detail -->
+                <div class="p-4 border-b-4 border-black dark:border-white bg-gray-50 dark:bg-zinc-900">
+                    <div class="flex items-center gap-3">
+                        <div id="user-avatar-color" class="w-10 h-10 rounded-full brutal-border bg-brutalCyan flex items-center justify-center font-bold text-black uppercase">
+                            AD
+                        </div>
+                        <div class="overflow-hidden">
+                            <h4 id="user-display-name" class="font-extrabold truncate text-sm">System Admin</h4>
+                            <span id="user-role-badge" class="inline-block text-[10px] font-bold bg-brutalPink text-white border border-black px-1.5 uppercase rounded">ADMIN_ROLE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs Links -->
+                <nav class="flex-1 p-4 space-y-3" id="navigation-sidebar">
+                    <!-- Standard Navigation (Admin/Reseller dynamic injection) -->
+                    <div id="nav-group-common">
+                        <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="w-full text-left p-3 brutal-border flex items-center gap-3 font-bold bg-brutalNeon text-black brutal-shadow-sm transition-transform active:translate-x-1">
+                            <i class="fa-solid fa-chart-line w-6"></i> Dashboard
+                        </button>
+                    </div>
+
+                    <!-- Admin Group Tabs -->
+                    <div id="nav-group-admin" class="space-y-3 hidden">
+                        <button onclick="switchTab('keys')" id="btn-tab-keys" class="w-full text-left p-3 brutal-border flex items-center gap-3 font-bold hover:bg-gray-100 dark:hover:bg-zinc-800 transition-transform active:translate-x-1">
+                            <i class="fa-solid fa-key w-6"></i> Key Management
+                        </button>
+                        <button onclick="switchTab('resellers')" id="btn-tab-resellers" class="w-full text-left p-3 brutal-border flex items-center gap-3 font-bold hover:bg-gray-100 dark:hover:bg-zinc-800 transition-transform active:translate-x-1">
+                            <i class="fa-solid fa-users w-6"></i> Reseller Squad
+                        </button>
+                        <button onclick="switchTab('products')" id="btn-tab-products" class="w-full text-left p-3 brutal-border flex items-center gap-3 font-bold hover:bg-gray-100 dark:hover:bg-zinc-800 transition-transform active:translate-x-1">
+                            <i class="fa-solid fa-box w-6"></i> Products Setup
+                        </button>
+                    </div>
+
+                    <!-- Reseller Group Tabs -->
+                    <div id="nav-group-reseller" class="space-y-3 hidden">
+                        <button onclick="switchTab('reseller-keys')" id="btn-tab-reseller-keys" class="w-full text-left p-3 brutal-border flex items-center gap-3 font-bold hover:bg-gray-100 dark:hover:bg-zinc-800 transition-transform active:translate-x-1">
+                            <i class="fa-solid fa-ticket w-6"></i> Generate Keys
+                        </button>
+                        <button onclick="switchTab('reseller-logs')" id="btn-tab-reseller-logs" class="w-full text-left p-3 brutal-border flex items-center gap-3 font-bold hover:bg-gray-100 dark:hover:bg-zinc-800 transition-transform active:translate-x-1">
+                            <i class="fa-solid fa-clock-rotate-left w-6"></i> Client History
+                        </button>
+                    </div>
+
+                    <!-- Universal Settings & Utilities -->
+                    <div class="border-t-4 border-black dark:border-white pt-3 space-y-3">
+                        <button onclick="switchTab('announcements')" id="btn-tab-announcements" class="w-full text-left p-3 brutal-border flex items-center gap-3 font-bold hover:bg-gray-100 dark:hover:bg-zinc-800 transition-transform active:translate-x-1">
+                            <i class="fa-solid fa-bullhorn w-6"></i> Announcements
+                        </button>
+                        <button onclick="switchTab('settings')" id="btn-tab-settings" class="w-full text-left p-3 brutal-border flex items-center gap-3 font-bold hover:bg-gray-100 dark:hover:bg-zinc-800 transition-transform active:translate-x-1">
+                            <i class="fa-solid fa-gears w-6"></i> Global Settings
+                        </button>
+                    </div>
+                </nav>
+
+                <!-- Logout Control -->
+                <div class="p-4 brutal-border border-b-0 border-l-0 border-r-0 bg-red-100 dark:bg-red-950/40">
+                    <button onclick="handleUserLogout()" class="w-full bg-brutalPink text-white font-extrabold py-2.5 uppercase tracking-wider brutal-btn text-center text-sm">
+                        <i class="fa-solid fa-right-from-bracket mr-2"></i> TERMINATE_SESSION
+                    </button>
+                </div>
+            </aside>
+
+            <!-- CONTAINER WINDOW FOR TABS -->
+            <main class="flex-1 flex flex-col min-h-screen overflow-x-hidden p-4 md:p-8">
+
+                <!-- MAIN STATUS INDICATORS -->
+                <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                    <div>
+                        <h2 id="current-tab-title" class="text-4xl md:text-5xl font-extrabold tracking-tight uppercase">SYSTEM_DASHBOARD</h2>
+                        <p id="current-tab-subtitle" class="text-sm font-bold text-gray-600 dark:text-gray-300">Live operational telemetry & license state tracking</p>
+                    </div>
+                    <!-- System Health Banner -->
+                    <div class="bg-white dark:bg-brutalBgDark text-black dark:text-white brutal-border brutal-shadow-sm p-3 font-bold text-xs flex items-center gap-3">
+                        <span class="inline-block w-4 h-4 bg-brutalGreen brutal-border animate-pulse rounded-full"></span>
+                        <div>
+                            <div>CORE ENGINE ONLINE</div>
+                            <div class="text-[10px] text-gray-500 font-semibold" id="last-ping-time">REALTIME FIREBASE SYNC</div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- APP TAB CONTENTS -->
+                
+                <!-- TAB 1: DASHBOARD -->
+                <section id="tab-dashboard" class="tab-content block space-y-8">
+                    <!-- STATISTICS GRID -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-brutalNeon text-black p-6 brutal-border brutal-shadow">
+                            <span class="text-xs font-black uppercase tracking-widest bg-black text-white px-2 py-0.5">METRIC_01</span>
+                            <h3 class="text-xl font-bold mt-2">Active Licenses</h3>
+                            <p class="text-5xl font-extrabold mt-1" id="stat-active-keys">0</p>
+                            <div class="mt-4 text-xs font-extrabold border-t border-black pt-2 uppercase">TOTAL ISSUED: <span id="stat-total-keys">0</span></div>
+                        </div>
+                        <div class="bg-brutalCyan text-black p-6 brutal-border brutal-shadow">
+                            <span class="text-xs font-black uppercase tracking-widest bg-black text-white px-2 py-0.5">METRIC_02</span>
+                            <h3 class="text-xl font-bold mt-2">Banned Licenses</h3>
+                            <p class="text-5xl font-extrabold mt-1" id="stat-banned-keys">0</p>
+                            <div class="mt-4 text-xs font-extrabold border-t border-black pt-2 uppercase">MALICIOUS HWID PREVENTION</div>
+                        </div>
+                        <div class="bg-brutalLilac text-black p-6 brutal-border brutal-shadow">
+                            <span class="text-xs font-black uppercase tracking-widest bg-black text-white px-2 py-0.5">METRIC_03</span>
+                            <h3 class="text-xl font-bold mt-2">Reseller Squad</h3>
+                            <p class="text-5xl font-extrabold mt-1" id="stat-total-resellers">0</p>
+                            <div class="mt-4 text-xs font-extrabold border-t border-black pt-2 uppercase">CREDITS SOLD: <span id="stat-total-credits">0</span></div>
+                        </div>
+                        <div class="bg-brutalGreen text-black p-6 brutal-border brutal-shadow">
+                            <span class="text-xs font-black uppercase tracking-widest bg-black text-white px-2 py-0.5">METRIC_04</span>
+                            <h3 class="text-xl font-bold mt-2">Total Logins</h3>
+                            <p class="text-5xl font-extrabold mt-1" id="stat-total-logins">0</p>
+                            <div class="mt-4 text-xs font-extrabold border-t border-black pt-2 uppercase">REALTIME HANDSHAKES</div>
+                        </div>
+                    </div>
+
+                    <!-- CORE VIEW LAYOUT (DASHBOARD CHARTS & RECENT SIGNINS) -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Recent Activity Timeline / Announcements -->
+                        <div class="lg:col-span-2 bg-white dark:bg-brutalBgDark p-6 brutal-border brutal-shadow flex flex-col h-[500px]">
+                            <div class="flex justify-between items-center border-b-4 border-black pb-4 mb-4">
+                                <h3 class="text-2xl font-extrabold tracking-tight">RECENT_LOGIN_Handshakes</h3>
+                                <span class="bg-brutalPink text-white text-xs font-bold px-2 py-1 brutal-border">LIVE</span>
+                            </div>
+                            <div class="flex-1 overflow-y-auto space-y-3" id="dashboard-recent-logins">
+                                <!-- Dynamic Injection -->
+                                <p class="text-center text-gray-400 font-bold py-10">Waiting for handshakes...</p>
+                            </div>
+                        </div>
+
+                        <!-- Side Quick Actions Panel -->
+                        <div class="bg-white dark:bg-brutalBgDark p-6 brutal-border brutal-shadow flex flex-col h-[500px] overflow-y-auto">
+                            <div class="border-b-4 border-black pb-4 mb-4">
+                                <h3 class="text-2xl font-extrabold tracking-tight">SYS_ANNOUNCEMENTS</h3>
+                            </div>
+                            <div id="dashboard-announcements" class="flex-1 space-y-4 overflow-y-auto">
+                                <!-- Dynamic List -->
+                                <p class="text-center text-gray-400 font-bold py-10">No recent announcements</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 2: KEY MANAGEMENT (ADMIN) -->
+                <section id="tab-keys" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-brutalLilac p-4 brutal-border">
+                        <div class="text-black">
+                            <h3 class="text-2xl font-black">LICENSE GENERATOR CONSOLE</h3>
+                            <p class="text-xs font-bold uppercase tracking-wider">Execute bulk generation or specific product issuance</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="openKeyGeneratorModal()" class="bg-white text-black font-extrabold py-2 px-4 brutal-btn text-sm uppercase">
+                                <i class="fa-solid fa-plus mr-2"></i> Generate Key
+                            </button>
+                            <button onclick="exportKeysToCSV()" class="bg-brutalCyan text-black font-extrabold py-2 px-4 brutal-btn text-sm uppercase">
+                                <i class="fa-solid fa-file-csv mr-2"></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filters Control Area -->
+                    <div class="bg-white dark:bg-brutalBgDark p-4 brutal-border brutal-shadow flex flex-col md:flex-row gap-4">
+                        <input type="text" id="filter-key-search" oninput="applyKeysFilters()" placeholder="Search Licenses by Key, Name, HWID, Note..." class="flex-1 p-3 brutal-border bg-white dark:bg-zinc-800 font-bold text-black dark:text-white outline-none">
+                        <select id="filter-key-product" onchange="applyKeysFilters()" class="p-3 brutal-border bg-white dark:bg-zinc-800 text-black dark:text-white font-bold">
+                            <option value="">All Products</option>
+                        </select>
+                        <select id="filter-key-status" onchange="applyKeysFilters()" class="p-3 brutal-border bg-white dark:bg-zinc-800 text-black dark:text-white font-bold">
+                            <option value="">All Statuses</option>
+                            <option value="active">Active Only</option>
+                            <option value="banned">Banned Only</option>
+                            <option value="expired">Expired Only</option>
+                        </select>
+                    </div>
+
+                    <!-- Dynamic Key Table Wrapper -->
+                    <div class="bg-white dark:bg-brutalBgDark brutal-border brutal-shadow overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-black text-white dark:bg-white dark:text-black font-bold uppercase text-xs">
+                                    <th class="p-4 border border-black dark:border-white">LICENSE_KEY</th>
+                                    <th class="p-4 border border-black dark:border-white">PRODUCT</th>
+                                    <th class="p-4 border border-black dark:border-white">RESELLER</th>
+                                    <th class="p-4 border border-black dark:border-white">DEVICES / HWID</th>
+                                    <th class="p-4 border border-black dark:border-white">EXPIRE DATE</th>
+                                    <th class="p-4 border border-black dark:border-white text-center">ACTION_CONTROLS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="keys-table-body" class="divide-y-4 divide-black font-bold text-sm">
+                                <!-- Keys Dynamically Injected -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- TAB 3: RESELLERS SQUAD (ADMIN) -->
+                <section id="tab-resellers" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-brutalCyan p-4 brutal-border">
+                        <div class="text-black">
+                            <h3 class="text-2xl font-black">RESELLER FLOCK & CREDIT MODULE</h3>
+                            <p class="text-xs font-bold uppercase tracking-wider">Authorize Reseller profiles and top-up digital ledger credits</p>
+                        </div>
+                        <button onclick="openResellerCreatorModal()" class="bg-white text-black font-extrabold py-2 px-4 brutal-btn text-sm uppercase">
+                            <i class="fa-solid fa-user-plus mr-2"></i> Register Reseller
+                        </button>
+                    </div>
+
+                    <!-- Search Reseller -->
+                    <div class="bg-white dark:bg-brutalBgDark p-4 brutal-border brutal-shadow">
+                        <input type="text" id="filter-reseller-search" oninput="applyResellerFilters()" placeholder="Search resellers by username, email..." class="w-full p-3 brutal-border bg-white dark:bg-zinc-800 font-bold text-black dark:text-white outline-none">
+                    </div>
+
+                    <!-- Reseller list layout -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="resellers-grid-container">
+                        <!-- Dynamic Reseller Card Placement -->
+                    </div>
+                </section>
+
+                <!-- TAB 4: PRODUCTS CONFIGURATION (ADMIN) -->
+                <section id="tab-products" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-brutalNeon p-4 brutal-border text-black">
+                        <div>
+                            <h3 class="text-2xl font-black">MASTER PRODUCTS REGISTRY</h3>
+                            <p class="text-xs font-bold uppercase tracking-wider">Define binary software identifiers and license duration templates</p>
+                        </div>
+                        <button onclick="openProductCreatorModal()" class="bg-white text-black font-extrabold py-2 px-4 brutal-btn text-sm uppercase">
+                            <i class="fa-solid fa-folder-plus mr-2"></i> Create Product
+                        </button>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="products-grid-container">
+                        <!-- Dynamic Products -->
+                    </div>
+                </section>
+
+                <!-- TAB 5: ANNOUNCEMENTS -->
+                <section id="tab-announcements" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-brutalPink p-4 brutal-border text-white">
+                        <div>
+                            <h3 class="text-2xl font-black uppercase">COMMUNICATION_BROADCAST</h3>
+                            <p class="text-xs font-bold uppercase tracking-wider text-pink-100">Send dynamic notice parameters directly into Client Panels and App banners</p>
+                        </div>
+                        <button id="admin-create-announcement-btn" onclick="openAnnouncementCreatorModal()" class="hidden bg-white text-black font-extrabold py-2 px-4 brutal-btn text-sm uppercase">
+                            <i class="fa-solid fa-bullhorn mr-2"></i> Broadcast Notice
+                        </button>
+                    </div>
+
+                    <!-- Live Notices Table -->
+                    <div class="grid grid-cols-1 gap-6" id="announcements-grid-container">
+                        <!-- Dynamic -->
+                    </div>
+                </section>
+
+                <!-- TAB 6: GLOBAL SETTINGS -->
+                <section id="tab-settings" class="tab-content hidden space-y-6">
+                    <div class="bg-white dark:bg-brutalBgDark p-6 brutal-border brutal-shadow max-w-4xl mx-auto space-y-8">
+                        <div class="border-b-4 border-black pb-4">
+                            <h3 class="text-3xl font-extrabold">SYSTEM_MASTER_PROFILES</h3>
+                            <p class="text-xs font-bold uppercase tracking-widest text-gray-500">Modify global system attributes, endpoints and security parameters</p>
+                        </div>
+
+                        <!-- Security rules display or editing info -->
+                        <div id="admin-settings-section" class="space-y-6 hidden">
+                            <h4 class="text-xl font-bold bg-brutalNeon text-black p-2 brutal-border inline-block">ADMINISTRATOR OVERRIDES</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="brutal-border p-4 bg-red-50 dark:bg-red-950/20">
+                                    <label class="block text-sm font-extrabold uppercase mb-2">SYSTEM MAINTENANCE FORCE</label>
+                                    <div class="flex items-center gap-3">
+                                        <button id="btn-toggle-maintenance" onclick="toggleMaintenanceState()" class="p-3 brutal-border font-extrabold bg-brutalPink text-white brutal-btn w-full uppercase">
+                                            ACTIVATE EMERGENCY LOCKDOWN
+                                        </button>
+                                    </div>
+                                    <p class="text-[10px] text-gray-500 font-bold mt-2">Forces all native API client logins to fail with 503 Maintenance response.</p>
+                                </div>
+                                <div class="brutal-border p-4 bg-zinc-50 dark:bg-zinc-800">
+                                    <label class="block text-sm font-extrabold uppercase mb-2">RESTRICT REGISTRATION LOGINS</label>
+                                    <div class="flex items-center gap-3">
+                                        <button id="btn-toggle-logins" onclick="toggleGlobalLoginsState()" class="p-3 brutal-border font-extrabold bg-brutalGreen text-black brutal-btn w-full uppercase">
+                                            Logins Are Enabled
+                                        </button>
+                                    </div>
+                                    <p class="text-[10px] text-gray-500 font-bold mt-2">Prevent key logins entirely while maintaining normal dashboard operations.</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-extrabold uppercase mb-2">CURRENT DISTRIBUTED VERSION</label>
+                                    <input type="text" id="setting-version" class="w-full p-3 brutal-border bg-white dark:bg-zinc-900 font-bold" placeholder="v1.0.0">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-extrabold uppercase mb-2">SUPPORT COMPLIANCE TELEGRAM/DISCORD</label>
+                                    <input type="text" id="setting-support" class="w-full p-3 brutal-border bg-white dark:bg-zinc-900 font-bold" placeholder="https://t.me/your_secure_kms">
+                                </div>
+                            </div>
+                            <button onclick="saveGlobalSettings()" class="bg-brutalCyan text-black font-extrabold p-3 brutal-btn uppercase tracking-widest text-sm">
+                                Apply Global Settings
+                            </button>
+                        </div>
+
+                        <!-- Developer Info / Cloud Function Deployment Code -->
+                        <div class="brutal-border p-4 bg-black text-white font-mono text-xs space-y-4">
+                            <div class="flex justify-between items-center text-brutalNeon border-b border-zinc-700 pb-2">
+                                <span>[NATIVE CLIENT INTEGRATION CONTROLS]</span>
+                                <span class="bg-red-600 text-white font-bold px-1 rounded">HTTPS</span>
+                            </div>
+                            <p class="text-zinc-400">Your Android / PC clients can make secure calls using the Firebase Cloud Function or direct REST endpoints. The following request body structure is enforced:</p>
+                            <pre class="bg-zinc-900 p-3 rounded overflow-x-auto text-green-400">
+POST /login
+Headers: Content-Type: application/json
+Payload:
+{
+  "key": "KMS-A1B2-C3D4-E5F6",
+  "hwid": "9900223847429184",
+  "android_id": "8a31b402",
+  "device_model": "Pixel 7 Pro",
+  "device_brand": "Google"
+}</pre>
+                            <p class="text-zinc-400">Server will instantly calculate remaining epoch expiration times, validate hardware signature patterns, lock current profiles, and output JSON variables securely.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 7: RESELLER KEYS VIEW -->
+                <section id="tab-reseller-keys" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-brutalLilac p-4 brutal-border text-black">
+                        <div>
+                            <h3 class="text-2xl font-black">RESELLER_KEY_GENERATION</h3>
+                            <p class="text-xs font-bold uppercase tracking-wider">Available Credits: <span class="bg-black text-white font-bold px-2 py-0.5 rounded" id="reseller-credits-display">0</span></p>
+                        </div>
+                        <button onclick="openResellerKeyGeneratorModal()" class="bg-white text-black font-extrabold py-2 px-4 brutal-btn text-sm uppercase">
+                            <i class="fa-solid fa-circle-dollar-to-slot mr-2"></i> Mint Key (-1 Credit)
+                        </button>
+                    </div>
+
+                    <!-- List of keys sold / issued by this reseller -->
+                    <div class="bg-white dark:bg-brutalBgDark p-4 brutal-border brutal-shadow">
+                        <input type="text" id="filter-reseller-keys-search" oninput="applyResellerKeysFilters()" placeholder="Search your generated licenses..." class="w-full p-3 brutal-border bg-white dark:bg-zinc-800 font-bold outline-none">
+                    </div>
+
+                    <div class="bg-white dark:bg-brutalBgDark brutal-border brutal-shadow overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-black text-white dark:bg-white dark:text-black font-bold uppercase text-xs">
+                                    <th class="p-4 border border-black dark:border-white">LICENSE_KEY</th>
+                                    <th class="p-4 border border-black dark:border-white">PRODUCT</th>
+                                    <th class="p-4 border border-black dark:border-white">HWID SIGNATURE</th>
+                                    <th class="p-4 border border-black dark:border-white">EXPIRATION TIMESTAMP</th>
+                                    <th class="p-4 border border-black dark:border-white">STATUS</th>
+                                    <th class="p-4 border border-black dark:border-white text-center">ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reseller-keys-table-body" class="divide-y-4 divide-black font-bold text-sm">
+                                <!-- Dynamic Injection -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- TAB 8: RESELLER CLIENT LOGS -->
+                <section id="tab-reseller-logs" class="tab-content hidden space-y-6">
+                    <div class="bg-white dark:bg-brutalBgDark p-6 brutal-border brutal-shadow">
+                        <h3 class="text-2xl font-extrabold tracking-tight border-b-4 border-black pb-4 mb-4">CLIENT_AUTHENTICATION_TELEMETRY</h3>
+                        <p class="text-sm font-bold text-gray-500 mb-6 uppercase">Track live API feedback, hardware mismatch incidents and status triggers from devices running your licenses</p>
+                        <div class="overflow-y-auto space-y-3 max-h-[600px]" id="reseller-logs-container">
+                            <!-- Injected -->
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- GLOBAL DYNAMIC MODALS -->
+
+    <!-- 1. KEY GENERATOR MODAL (ADMIN) -->
+    <div id="modal-generate-key" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
+        <div class="bg-white text-black p-6 brutal-border brutal-shadow w-full max-w-lg">
+            <h3 class="text-3xl font-extrabold uppercase border-b-4 border-black pb-2 mb-4">MINT_LICENSE_KEYS</h3>
+            <form onsubmit="event.preventDefault(); submitKeyGeneration();" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-1">Target Product</label>
+                        <select id="gen-key-product" required class="w-full p-2.5 brutal-border font-bold bg-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-1">Duration Format</label>
+                        <select id="gen-key-duration" required class="w-full p-2.5 brutal-border font-bold bg-white">
+                            <option value="1">1 Day (24h Trial)</option>
+                            <option value="7">7 Days (Weekly)</option>
+                            <option value="30">30 Days (Monthly)</option>
+                            <option value="365">365 Days (Annual)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-1">Quantity to Mint</label>
+                        <input type="number" id="gen-key-qty" min="1" max="100" value="1" required class="w-full p-2.5 brutal-border font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-1">Max Connected Devices</label>
+                        <input type="number" id="gen-key-devices" min="1" max="10" value="1" required class="w-full p-2.5 brutal-border font-bold">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Owner Assignment (Reseller)</label>
+                    <select id="gen-key-owner" class="w-full p-2.5 brutal-border font-bold bg-white">
+                        <option value="admin">System Administration (Self)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Administrative Note / Tag</label>
+                    <input type="text" id="gen-key-note" placeholder="E.g., Special promo client" class="w-full p-2.5 brutal-border font-bold">
+                </div>
+                <div class="flex gap-2 pt-4 border-t-2 border-black border-dashed">
+                    <button type="submit" class="flex-1 bg-brutalNeon text-black font-black py-2 brutal-btn uppercase">Execute Generation</button>
+                    <button type="button" onclick="closeModal('modal-generate-key')" class="bg-brutalPink text-white font-black py-2 px-4 brutal-btn uppercase">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. REGISTER RESELLER MODAL (ADMIN) -->
+    <div id="modal-create-reseller" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
+        <div class="bg-white text-black p-6 brutal-border brutal-shadow w-full max-w-md">
+            <h3 class="text-3xl font-extrabold uppercase border-b-4 border-black pb-2 mb-4">REGISTER_RESELLER</h3>
+            <form onsubmit="event.preventDefault(); submitResellerCreation();" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Username Reference</label>
+                    <input type="text" id="reseller-username" required placeholder="super_reseller" class="w-full p-2.5 brutal-border font-bold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Reseller Email Address</label>
+                    <input type="email" id="reseller-email" required placeholder="reseller@kms.com" class="w-full p-2.5 brutal-border font-bold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Set Account Password</label>
+                    <input type="password" id="reseller-password" required placeholder="SecurePassword123!" class="w-full p-2.5 brutal-border font-bold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Starting Ledger Balance (Credits)</label>
+                    <input type="number" id="reseller-initial-credits" min="0" value="10" required class="w-full p-2.5 brutal-border font-bold">
+                </div>
+                <div class="flex gap-2 pt-4 border-t-2 border-black border-dashed">
+                    <button type="submit" class="flex-1 bg-brutalCyan text-black font-black py-2 brutal-btn uppercase">Save Partner</button>
+                    <button type="button" onclick="closeModal('modal-create-reseller')" class="bg-brutalPink text-white font-black py-2 px-4 brutal-btn uppercase">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. ADD/REMOVE CREDITS MODAL (ADMIN) -->
+    <div id="modal-manage-credits" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
+        <div class="bg-white text-black p-6 brutal-border brutal-shadow w-full max-w-sm">
+            <h3 class="text-2xl font-extrabold uppercase border-b-4 border-black pb-2 mb-4">ADJUST_LEDGER</h3>
+            <p class="text-xs font-bold text-gray-500 mb-4">Modify Credits for Reseller: <span id="credit-target-username" class="font-black text-black">Target</span></p>
+            <form onsubmit="event.preventDefault(); submitCreditModification();" class="space-y-4">
+                <input type="hidden" id="credit-target-uid">
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Adjustment Action</label>
+                    <select id="credit-action-type" class="w-full p-2.5 brutal-border font-bold bg-white">
+                        <option value="add">Add Credits (+)</option>
+                        <option value="remove">Deduct Credits (-)</option>
+                        <option value="set">Set Absolute Balance (=)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Credits Volume</label>
+                    <input type="number" id="credit-amount" min="1" value="50" required class="w-full p-2.5 brutal-border font-bold">
+                </div>
+                <div class="flex gap-2 pt-4 border-t-2 border-black border-dashed">
+                    <button type="submit" class="flex-1 bg-brutalNeon text-black font-black py-2 brutal-btn uppercase">Apply Ledger</button>
+                    <button type="button" onclick="closeModal('modal-manage-credits')" class="bg-brutalPink text-white font-black py-2 px-4 brutal-btn uppercase">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. PRODUCT CREATOR MODAL -->
+    <div id="modal-create-product" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
+        <div class="bg-white text-black p-6 brutal-border brutal-shadow w-full max-w-md">
+            <h3 class="text-3xl font-extrabold uppercase border-b-4 border-black pb-2 mb-4">REGISTER_BINARY</h3>
+            <form onsubmit="event.preventDefault(); submitProductCreation();" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Product Name</label>
+                    <input type="text" id="product-name" required placeholder="E.g., Super Cheat Engine" class="w-full p-2.5 brutal-border font-bold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Unique Product Identifier (Code)</label>
+                    <input type="text" id="product-code" required placeholder="E.g., PRODUCT_CHEAT_A" class="w-full p-2.5 brutal-border font-bold">
+                </div>
+                <div class="flex gap-2 pt-4 border-t-2 border-black border-dashed">
+                    <button type="submit" class="flex-1 bg-brutalGreen text-black font-black py-2 brutal-btn uppercase">Save Registry</button>
+                    <button type="button" onclick="closeModal('modal-create-product')" class="bg-brutalPink text-white font-black py-2 px-4 brutal-btn uppercase">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 5. ANNOUNCEMENT CREATOR MODAL -->
+    <div id="modal-create-announcement" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
+        <div class="bg-white text-black p-6 brutal-border brutal-shadow w-full max-w-md">
+            <h3 class="text-3xl font-extrabold uppercase border-b-4 border-black pb-2 mb-4">NEW_BROADCAST</h3>
+            <form onsubmit="event.preventDefault(); submitAnnouncementCreation();" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Notice Header (Title)</label>
+                    <input type="text" id="announce-title" required placeholder="System Update Pending" class="w-full p-2.5 brutal-border font-bold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Message Content / Directives</label>
+                    <textarea id="announce-message" rows="4" required placeholder="Provide clear status updates to clients and teammates..." class="w-full p-2.5 brutal-border font-bold"></textarea>
+                </div>
+                <div class="flex gap-2 pt-4 border-t-2 border-black border-dashed">
+                    <button type="submit" class="flex-1 bg-brutalPink text-white font-black py-2 brutal-btn uppercase">Publish Notice</button>
+                    <button type="button" onclick="closeModal('modal-create-announcement')" class="bg-black text-white font-black py-2 px-4 brutal-btn uppercase">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 6. RESELLER KEY GENERATOR MODAL -->
+    <div id="modal-reseller-generate" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
+        <div class="bg-white text-black p-6 brutal-border brutal-shadow w-full max-w-sm">
+            <h3 class="text-3xl font-extrabold uppercase border-b-4 border-black pb-2 mb-4">MINT_LICENSE</h3>
+            <p class="text-xs font-bold text-gray-500 mb-4">Minting keys deducts 1 credit per key. Make sure your balance allows generation.</p>
+            <form onsubmit="event.preventDefault(); submitResellerKeyMinting();" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Choose Product Target</label>
+                    <select id="reseller-gen-product" required class="w-full p-2.5 brutal-border font-bold bg-white"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Duration Frame</label>
+                    <select id="reseller-gen-duration" required class="w-full p-2.5 brutal-border font-bold bg-white">
+                        <option value="1">1 Day (24-Hour Pass)</option>
+                        <option value="7">7 Days (Weekly Pass)</option>
+                        <option value="30">30 Days (Monthly Pass)</option>
+                        <option value="365">365 Days (Annual Pass)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Hardware Limits (Max Devices)</label>
+                    <input type="number" id="reseller-gen-devices" min="1" max="5" value="1" required class="w-full p-2.5 brutal-border font-bold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Add Note / Customer Username</label>
+                    <input type="text" id="reseller-gen-note" placeholder="For customer Jhon" class="w-full p-2.5 brutal-border font-bold">
+                </div>
+                <div class="flex gap-2 pt-4 border-t-2 border-black border-dashed">
+                    <button type="submit" class="flex-1 bg-brutalLilac text-black font-black py-2 brutal-btn uppercase">Confirm Mint</button>
+                    <button type="button" onclick="closeModal('modal-reseller-generate')" class="bg-brutalPink text-white font-black py-2 px-4 brutal-btn uppercase">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 7. EDIT KEY MODAL (ADMIN) -->
+    <div id="modal-edit-key" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
+        <div class="bg-white text-black p-6 brutal-border brutal-shadow w-full max-w-sm">
+            <h3 class="text-2xl font-extrabold uppercase border-b-4 border-black pb-2 mb-4">REWRITE_LICENSE_METRICS</h3>
+            <form onsubmit="event.preventDefault(); submitEditKey();" class="space-y-4">
+                <input type="hidden" id="edit-key-id">
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">License Target</label>
+                    <input type="text" id="edit-key-display" readonly class="w-full p-2.5 brutal-border font-bold bg-gray-100 cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Max Devices</label>
+                    <input type="number" id="edit-key-devices" min="1" max="100" class="w-full p-2.5 brutal-border font-bold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Owner Assignment (Reseller ID)</label>
+                    <select id="edit-key-owner" class="w-full p-2.5 brutal-border font-bold bg-white">
+                        <option value="admin">Admin Self</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase mb-1">Note Tag</label>
+                    <input type="text" id="edit-key-note" class="w-full p-2.5 brutal-border font-bold">
+                </div>
+                <div class="flex gap-2 pt-4 border-t-2 border-black border-dashed">
+                    <button type="submit" class="flex-1 bg-brutalCyan text-black font-black py-2 brutal-btn uppercase">Save Refactor</button>
+                    <button type="button" onclick="closeModal('modal-edit-key')" class="bg-brutalPink text-white font-black py-2 px-4 brutal-btn uppercase">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- GLOBAL GENERAL CONFIRMATION MODAL -->
+    <div id="modal-confirm" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center p-4 z-50">
+        <div class="bg-white text-black p-6 brutal-border brutal-shadow w-full max-w-sm">
+            <h3 class="text-3xl font-extrabold uppercase mb-2 border-b-4 border-black pb-2" id="confirm-title">ALERT_ACTION</h3>
+            <p class="font-bold text-sm mb-6" id="confirm-message">Are you absolutely sure you want to perform this operation?</p>
+            <div class="flex gap-2">
+                <button id="confirm-btn-yes" class="flex-1 bg-brutalPink text-white font-extrabold py-2.5 brutal-btn uppercase">YES, DO IT</button>
+                <button id="confirm-btn-no" onclick="closeModal('modal-confirm')" class="bg-black text-white font-extrabold py-2.5 px-4 brutal-btn uppercase">NO</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST INJECTOR CONTROLLER -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-4 max-w-sm w-full"></div>
+
+    <!-- ========================================================= -->
+    <!-- FIREBASE AND CLIENT CORE SCRIPT MODULES -->
+    <!-- ========================================================= -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js",
+                "firebase/firestore": "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "firebase/app";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword,
+            signInAnonymously, 
+            signInWithCustomToken,
+            onAuthStateChanged, 
+            signOut
+        } from "firebase/auth";
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc, 
+            getDoc, 
+            collection, 
+            onSnapshot, 
+            updateDoc, 
+            deleteDoc,
+            increment 
+        } from "firebase/firestore";
+
+        // =========================================================
+        // USER'S CONFIGURATION & SETUP STATE
+        // =========================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDj7tCg8-5vXA55zJmNyuv_ahFPkDhwxas",
+            authDomain: "keymanager-f8144.firebaseapp.com",
+            projectId: "keymanager-f8144",
+            storageBucket: "keymanager-f8144.firebasestorage.app",
+            messagingSenderId: "864073300418",
+            appId: "1:864073300418:web:f12302a1b82e27e4a6fe5b",
+            measurementId: "G-3E3SNHJVGZ"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-brutal-kms';
+
+        // Memory Store for live collection listeners to prevent double parsing
+        let currentSessionUser = null;
+        let authMode = 'login'; // 'login' or 'register'
+        let dbCache = {
+            keys: [],
+            resellers: [],
+            products: [],
+            announcements: [],
+            settings: {},
+            logs: []
+        };
+
+        // =========================================================
+        // LIFE CYCLE TRIGGER (ON LOAD) & TIMEOUT SAFETY
+        // =========================================================
+        window.onload = async () => {
+            // Tampilkan tombol bypass manual jika loading di atas 3.5 detik
+            setTimeout(() => {
+                const bypassBtn = document.getElementById('loading-bypass-btn');
+                if (bypassBtn) bypassBtn.classList.remove('hidden');
+            }, 3500);
+
+            // AUTO-BYPASS EMERGENCY TIMEOUT (Maksimal 5.5 detik layar loading)
+            setTimeout(() => {
+                const loadingEl = document.getElementById('app-loading');
+                if (loadingEl && !loadingEl.classList.contains('hidden')) {
+                    console.warn("KMS Warning: Firebase connection timed out. Auto-bypassing loading screen...");
+                    loadingEl.classList.add('hidden');
+                    document.getElementById('auth-container').classList.remove('hidden');
+                    showToast("Emergency Timeout: Bypassed Loading Screen", "info");
+                }
+            }, 5500);
+
+            await runAuthenticationInitialization();
+        };
+
+        // Emergency manual bypass trigger
+        window.emergencyBypassLoading = function() {
+            const appLoadingEl = document.getElementById('app-loading');
+            if (appLoadingEl) appLoadingEl.classList.add('hidden');
+            document.getElementById('auth-container').classList.remove('hidden');
+            showToast("Bypassed loading screen. Check configuration settings!", "info");
+        };
+
+        // Custom auth runner prioritising environment tokens
+        async function runAuthenticationInitialization() {
+            // Standard Auth State Listener
+            onAuthStateChanged(auth, async (user) => {
+                const appLoadingEl = document.getElementById('app-loading');
+                if (user && !user.isAnonymous) {
+                    currentSessionUser = user;
+                    await handleRoleRedirect(user);
+                } else {
+                    currentSessionUser = null;
+                    // Reset View dan kembalikan tombol login ke kondisi semula agar tidak stuck
+                    document.getElementById('auth-container').classList.remove('hidden');
+                    document.getElementById('main-interface').classList.add('hidden');
+                    resetLoginButton();
+                    if (appLoadingEl) appLoadingEl.classList.add('hidden');
+                }
+            });
+        }
+
+        // =========================================================
+        // AUTH MODE TOGGLING (LOGIN VS REGISTER)
+        // =========================================================
+        window.setAuthMode = function(mode) {
+            authMode = mode;
+            const tabLogin = document.getElementById('auth-tab-login');
+            const tabRegister = document.getElementById('auth-tab-register');
+            const usernameWrapper = document.getElementById('register-username-wrapper');
+            const roleWrapper = document.getElementById('register-role-wrapper');
+            const headerTitle = document.getElementById('auth-header-title');
+            const headerSubtitle = document.getElementById('auth-header-subtitle');
+            const authBtn = document.getElementById('auth-btn');
+
+            if (mode === 'login') {
+                tabLogin.className = "flex-1 py-3 font-extrabold text-center bg-brutalNeon border-r-4 border-black text-sm tracking-wider";
+                tabRegister.className = "flex-1 py-3 font-extrabold text-center bg-white text-sm tracking-wider";
+                usernameWrapper.classList.add('hidden');
+                roleWrapper.classList.add('hidden');
+                headerTitle.innerText = "SYSTEM_LOGIN";
+                headerSubtitle.innerText = "ENTER DECRYPTION CREDENTIALS";
+                authBtn.innerHTML = `<i class="fa-solid fa-key mr-2"></i> Initialize Auth`;
+                document.getElementById('auth-username').required = false;
+            } else {
+                tabLogin.className = "flex-1 py-3 font-extrabold text-center bg-white border-r-4 border-black text-sm tracking-wider";
+                tabRegister.className = "flex-1 py-3 font-extrabold text-center bg-brutalNeon text-sm tracking-wider";
+                usernameWrapper.classList.remove('hidden');
+                roleWrapper.classList.remove('hidden');
+                headerTitle.innerText = "CREATE_ACCOUNT";
+                headerSubtitle.innerText = "SETUP SECURE KMS PARTNER ROLE";
+                authBtn.innerHTML = `<i class="fa-solid fa-user-plus mr-2"></i> Register Profile`;
+                document.getElementById('auth-username').required = true;
+            }
+            resetLoginButton();
+        };
+
+        function resetLoginButton() {
+            const authBtn = document.getElementById('auth-btn');
+            authBtn.disabled = false;
+            if (authMode === 'login') {
+                authBtn.innerHTML = `<i class="fa-solid fa-key mr-2"></i> Initialize Auth`;
+            } else {
+                authBtn.innerHTML = `<i class="fa-solid fa-user-plus mr-2"></i> Register Profile`;
+            }
+        }
+
+        // =========================================================
+        // SUBMIT LOGIN / REGISTER HANDLERS
+        // =========================================================
+        window.handleAuthSubmission = async function() {
+            const email = document.getElementById('auth-email').value.trim();
+            const pass = document.getElementById('auth-password').value;
+            const loginBtn = document.getElementById('auth-btn');
+
+            const errorBox = document.getElementById('auth-error-msg');
+            const errorText = document.getElementById('auth-error-text');
+            errorBox.classList.add('hidden');
+
+            loginBtn.innerText = "PROCESSING ENCRYPTED KEY...";
+            loginBtn.disabled = true;
+
+            try {
+                if (authMode === 'login') {
+                    // Eksekusi Login
+                    await signInWithEmailAndPassword(auth, email, pass);
+                    showToast("Authentication confirmed. Access Granted.", "success");
+                } else {
+                    // Eksekusi Register Akun Baru
+                    const username = document.getElementById('auth-username').value.trim();
+                    const role = document.getElementById('auth-role').value;
+
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+                    const newUser = userCredential.user;
+
+                    showToast("Profile Created! Registering Firestore Ledger...", "info");
+
+                    if (role === 'admin') {
+                        // Tulis struktur admin
+                        const adminDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'admins', newUser.uid);
+                        await setDoc(adminDocRef, {
+                            uid: newUser.uid,
+                            username: username,
+                            email: email,
+                            role: "admin",
+                            created_at: new Date().toISOString(),
+                            last_login: new Date().toISOString()
+                        });
+                    } else {
+                        // Tulis struktur reseller dengan saldo default 10 credits
+                        const resellerDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'resellers', newUser.uid);
+                        await setDoc(resellerDocRef, {
+                            uid: newUser.uid,
+                            username: username,
+                            email: email,
+                            credits: 10,
+                            active: true,
+                            created_at: new Date().toISOString(),
+                            last_login: new Date().toISOString(),
+                            generated_keys: 0,
+                            sold_keys: 0
+                        });
+                    }
+
+                    showToast("System profile initialized. Logging in...", "success");
+                    // Pindahkan otomatis ke tab Login setelah pendaftaran sukses
+                    setAuthMode('login');
+                }
+            } catch (err) {
+                console.error("Auth Failure Error Code:", err.code);
+                let customMsg = "Access Denied: ";
+                if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+                    customMsg += "Invalid KMS Master credentials.";
+                } else if (err.code === 'auth/email-already-in-use') {
+                    customMsg += "Email address is already registered.";
+                } else if (err.code === 'auth/weak-password') {
+                    customMsg += "Password must be at least 6 characters.";
+                } else {
+                    customMsg += err.message;
+                }
+                errorText.innerText = customMsg;
+                errorBox.classList.remove('hidden');
+                resetLoginButton();
+            }
+        };
+
+        // Handles user role discovery by checking both collections: 'admins' and 'resellers'
+        async function handleRoleRedirect(user) {
+            const appLoadingEl = document.getElementById('app-loading');
+            
+            try {
+                // query terstruktur ke root sub-koleksi
+                const adminDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'admins', user.uid);
+                const adminSnap = await getDoc(adminDocRef);
+
+                if (adminSnap.exists()) {
+                    setupAdminEnvironment(adminSnap.data());
+                } else {
+                    const resellerDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'resellers', user.uid);
+                    const resellerSnap = await getDoc(resellerDocRef);
+                    if (resellerSnap.exists()) {
+                        setupResellerEnvironment(resellerSnap.data());
+                    } else {
+                        // Jika login sukses tetapi profile di database kosong (belum di-write rules / collections)
+                        console.warn("Firestore profile missing. Creating fallback admin profile...");
+                        await initializeFirstAdminRecord(user);
+                    }
+                }
+            } catch (error) {
+                console.error("Critical authentication handshake failure: ", error);
+                if (error.message.includes("permission") || error.code === "permission-denied") {
+                    showFirestorePermissionErrorModal();
+                } else {
+                    showToast("System DB Failure. Checking Firebase Config...", "error");
+                }
+                resetLoginButton();
+                await signOut(auth);
+            } finally {
+                if (appLoadingEl) appLoadingEl.classList.add('hidden');
+            }
+        }
+
+        async function initializeFirstAdminRecord(user) {
+            try {
+                const adminDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'admins', user.uid);
+                const initPayload = {
+                    uid: user.uid,
+                    username: user.email ? user.email.split('@')[0] : "BrutalMaster",
+                    email: user.email || "master@brutal.kms",
+                    role: "admin",
+                    created_at: new Date().toISOString(),
+                    last_login: new Date().toISOString()
+                };
+                await setDoc(adminDocRef, initPayload);
+                setupAdminEnvironment(initPayload);
+            } catch (err) {
+                console.error("Failed to initialize admin record in database: ", err);
+                if (err.message.includes("permission") || err.code === "permission-denied") {
+                    showFirestorePermissionErrorModal();
+                } else {
+                    showToast("DB Write Permission Denied. Check Security Rules!", "error");
+                }
+                resetLoginButton();
+                await signOut(auth);
+            }
+        }
+
+        // Modal Panduan Aturan Keamanan Khusus jika Terjadi Error Izin
+        function showFirestorePermissionErrorModal() {
+            // Force loading screen to hide so the user can see instructions
+            const appLoadingEl = document.getElementById('app-loading');
+            if (appLoadingEl) appLoadingEl.classList.add('hidden');
+            
+            const modalId = "modal-security-rules-error";
+            let modalEl = document.getElementById(modalId);
+            
+            if (!modalEl) {
+                modalEl = document.createElement('div');
+                modalEl.id = modalId;
+                modalEl.className = "fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center p-4 z-50";
+                modalEl.innerHTML = `
+                    <div class="bg-white text-black p-6 brutal-border brutal-shadow w-full max-w-lg overflow-y-auto max-h-[90vh]">
+                        <h3 class="text-3xl font-extrabold uppercase mb-2 border-b-4 border-black pb-2 text-brutalPink">
+                            <i class="fa-solid fa-shield-halved mr-2 animate-bounce"></i> SECURITY_PERMISSION_DENIED
+                        </h3>
+                        <p class="font-bold text-sm mb-4">Waduh! Firebase kamu memblokir pembuatan akun karena aturan keamanan (Rules) Firestore belum diatur atau masih bawaan pabrik.</p>
+                        
+                        <div class="bg-yellow-100 border-2 border-black p-3 text-xs font-bold mb-4">
+                            <span class="text-red-600">SOLUSI MUDAH:</span> Kamu hanya perlu menyalin kode di bawah ini, lalu menempelkannya (paste) di tab <strong class="underline">Rules</strong> halaman database Firestore kamu!
+                        </div>
+
+                        <div class="relative mb-4">
+                            <pre class="bg-zinc-900 text-green-400 p-3 text-[10px] rounded font-mono overflow-x-auto brutal-border h-48 select-all" id="rules-code-block">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    function isAdmin(appId) {
+      return isAuth() && exists(/databases/$(database)/documents/artifacts/$(appId)/public/data/admins/$(request.auth.uid));
+    }
+
+    // Mengizinkan user menulis profilenya sendiri saat registrasi awal
+    match /artifacts/{appId}/public/data/admins/{uid} {
+      allow read: if isAuth();
+      allow write: if isAuth() && request.auth.uid == uid;
+    }
+
+    match /artifacts/{appId}/public/data/resellers/{uid} {
+      allow read: if isAuth();
+      allow write: if isAuth() && request.auth.uid == uid;
+    }
+
+    match /artifacts/{appId}/public/data/licenses/{licenseKey} {
+      allow read: if isAuth();
+      allow write: if isAdmin(appId) || (isAuth() && request.resource.data.reseller_id == request.auth.uid);
+    }
+
+    match /artifacts/{appId}/public/data/{collectionName}/{documentId} {
+      allow read: if isAuth();
+      allow write: if isAdmin(appId);
+    }
+  }
+}</pre>
+                            <button onclick="copyRulesToClipboard()" class="absolute right-2 top-2 bg-brutalCyan border-2 border-black font-extrabold text-xs py-1 px-2 hover:bg-sky-400 transition-colors">
+                                <i class="fa-regular fa-copy mr-1"></i> SALIN RULES
+                            </button>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <a href="https://console.firebase.google.com/" target="_blank" class="flex-1 bg-brutalNeon text-black font-extrabold py-2.5 text-center brutal-btn uppercase text-xs">
+                                <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Buka Firebase Console
+                            </a>
+                            <button onclick="document.getElementById('${modalId}').remove(); location.reload();" class="bg-black text-white font-extrabold py-2.5 px-6 brutal-btn uppercase text-xs">
+                                Selesai & Segarkan Halaman
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modalEl);
+            } else {
+                modalEl.classList.remove('hidden');
+            }
+        }
+
+        window.copyRulesToClipboard = function() {
+            const rulesText = document.getElementById('rules-code-block').innerText;
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = rulesText;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+            showToast("Aturan Firestore berhasil disalin!", "success");
+        };
+
+        // =========================================================
+        // LAYOUT & MENU MANIPULATION CONTROLS (TABS)
+        // =========================================================
+        window.switchTab = function(tabName) {
+            // Hide all tab components
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            
+            // Show requested tab
+            const targetTab = document.getElementById(`tab-${tabName}`);
+            if (targetTab) targetTab.classList.remove('hidden');
+
+            // Set Title & Subtitle descriptions dynamically
+            const headerTitle = document.getElementById('current-tab-title');
+            const headerSubtitle = document.getElementById('current-tab-subtitle');
+            
+            // Map tab configurations
+            const titles = {
+                'dashboard': { t: 'SYSTEM_DASHBOARD', s: 'Live operational telemetry & license state tracking' },
+                'keys': { t: 'LICENSE_KEYS_VAULT', s: 'Issue, ban, renew, and lock device access signatures' },
+                'resellers': { t: 'RESELLER_NETWORK', s: 'Manage reseller credits, sales margins and performance' },
+                'products': { t: 'BINARY_PRODUCTS', s: 'System products parameters and validity periods' },
+                'announcements': { t: 'GLOBAL_NOTICES', s: 'Broadcast real-time messages to panel and client platforms' },
+                'settings': { t: 'SYSTEM_SETTINGS', s: 'Customize administrative triggers and system variables' },
+                'reseller-keys': { t: 'RESELLER_MINTING_PANEL', s: 'Generate and configure customer license keys' },
+                'reseller-logs': { t: 'CLIENT_HANDSHAKE_TELEMETRY', s: 'Live feedback and connection records of your licenses' }
+            };
+
+            if (titles[tabName]) {
+                headerTitle.innerText = titles[tabName].t;
+                headerSubtitle.innerText = titles[tabName].s;
+            }
+
+            // Refactor active class states in Nav buttons
+            const navContainer = document.getElementById('navigation-sidebar');
+            navContainer.querySelectorAll('button').forEach(btn => {
+                btn.className = "w-full text-left p-3 brutal-border flex items-center gap-3 font-bold hover:bg-gray-100 dark:hover:bg-zinc-800 transition-transform active:translate-x-1 dark:text-white";
+            });
+
+            const activeBtn = document.getElementById(`btn-tab-${tabName}`);
+            if (activeBtn) {
+                activeBtn.className = "w-full text-left p-3 brutal-border flex items-center gap-3 font-bold bg-brutalNeon text-black brutal-shadow-sm transition-transform active:translate-x-1";
+            }
+        };
+
+        // =========================================================
+        // REALTIME SYNCS (ADMIN CONTEXT SETUP)
+        // =========================================================
+        function setupAdminEnvironment(adminData) {
+            document.getElementById('user-display-name').innerText = adminData.username;
+            document.getElementById('user-role-badge').innerText = "ADMIN_ROLE";
+            document.getElementById('user-role-badge').className = "inline-block text-[10px] font-bold bg-brutalPink text-white border border-black px-1.5 uppercase rounded";
+            document.getElementById('user-avatar-color').className = "w-10 h-10 rounded-full brutal-border bg-brutalNeon flex items-center justify-center font-bold text-black uppercase";
+            document.getElementById('user-avatar-color').innerText = adminData.username.substring(0, 2);
+
+            // Show admin sidebar tabs
+            document.getElementById('nav-group-admin').classList.remove('hidden');
+            document.getElementById('nav-group-reseller').classList.add('hidden');
+            document.getElementById('admin-settings-section').classList.remove('hidden');
+            document.getElementById('admin-create-announcement-btn').classList.remove('hidden');
+
+            document.getElementById('auth-container').classList.add('hidden');
+            document.getElementById('main-interface').classList.remove('hidden');
+
+            // Trigger Firestore listeners (Admin context listens to everything)
+            startGlobalDatabaseRealtimeSync();
+        }
+
+        // =========================================================
+        // REALTIME SYNCS (RESELLER CONTEXT SETUP)
+        // =========================================================
+        function setupResellerEnvironment(resellerData) {
+            document.getElementById('user-display-name').innerText = resellerData.username;
+            document.getElementById('user-role-badge').innerText = "RESELLER_ROLE";
+            document.getElementById('user-role-badge').className = "inline-block text-[10px] font-bold bg-brutalCyan text-black border border-black px-1.5 uppercase rounded";
+            document.getElementById('user-avatar-color').className = "w-10 h-10 rounded-full brutal-border bg-brutalLilac flex items-center justify-center font-bold text-black uppercase";
+            document.getElementById('user-avatar-color').innerText = resellerData.username.substring(0, 2);
+
+            // Show Reseller sidebar tabs
+            document.getElementById('nav-group-admin').classList.add('hidden');
+            document.getElementById('nav-group-reseller').classList.remove('hidden');
+            document.getElementById('admin-settings-section').classList.add('hidden');
+            document.getElementById('admin-create-announcement-btn').classList.add('hidden');
+
+            document.getElementById('auth-container').classList.add('hidden');
+            document.getElementById('main-interface').classList.remove('hidden');
+
+            // Instantly transition default view to Reseller keys
+            switchTab('dashboard');
+
+            // Trigger Reseller Context database listeners
+            startResellerDatabaseRealtimeSync();
+        }
+
+        // =========================================================
+        // MASTER REALTIME ENGINE (ADMIN DATA STREAM)
+        // =========================================================
+        function startGlobalDatabaseRealtimeSync() {
+            // Document listeners using mandated structure RULE 1 & 2
+            const rootRef = 'artifacts/' + appId + '/public/data/';
+
+            // Listen 1: Global Keys Vault
+            onSnapshot(collection(db, rootRef + 'licenses'), (snap) => {
+                dbCache.keys = [];
+                snap.forEach(doc => dbCache.keys.push({ id: doc.id, ...doc.data() }));
+                renderKeysTable();
+                calculateDashboardMetrics();
+            }, (err) => handleSyncError('licenses', err));
+
+            // Listen 2: Reseller Database
+            onSnapshot(collection(db, rootRef + 'resellers'), (snap) => {
+                dbCache.resellers = [];
+                snap.forEach(doc => dbCache.resellers.push({ id: doc.id, ...doc.data() }));
+                renderResellersCards();
+                updateResellerOwnerDropdowns();
+                calculateDashboardMetrics();
+            }, (err) => handleSyncError('resellers', err));
+
+            // Listen 3: Product Registry
+            onSnapshot(collection(db, rootRef + 'products'), (snap) => {
+                dbCache.products = [];
+                snap.forEach(doc => dbCache.products.push({ id: doc.id, ...doc.data() }));
+                renderProductsGrid();
+                updateProductSelectDropdowns();
+            }, (err) => handleSyncError('products', err));
+
+            // Listen 4: Global Settings
+            onSnapshot(collection(db, rootRef + 'settings'), (snap) => {
+                snap.forEach(doc => {
+                    dbCache.settings[doc.id] = doc.data();
+                });
+                renderGlobalSystemSettingsView();
+            }, (err) => handleSyncError('settings', err));
+
+            // Listen 5: Client Notices
+            onSnapshot(collection(db, rootRef + 'announcements'), (snap) => {
+                dbCache.announcements = [];
+                snap.forEach(doc => dbCache.announcements.push({ id: doc.id, ...doc.data() }));
+                renderAnnouncementsAndNotices();
+            }, (err) => handleSyncError('announcements', err));
+
+            // Listen 6: Device logs
+            onSnapshot(collection(db, rootRef + 'logs'), (snap) => {
+                dbCache.logs = [];
+                snap.forEach(doc => dbCache.logs.push({ id: doc.id, ...doc.data() }));
+                renderTelemetryLogs();
+            }, (err) => handleSyncError('logs', err));
+        }
+
+        // =========================================================
+        // MASTER REALTIME ENGINE (RESELLER DATA STREAM)
+        // =========================================================
+        function startResellerDatabaseRealtimeSync() {
+            const rootRef = 'artifacts/' + appId + '/public/data/';
+
+            // Listen Reseller Profile Details Realtime
+            onSnapshot(doc(db, rootRef + 'resellers', currentSessionUser.uid), (docSnap) => {
+                if (docSnap.exists()) {
+                    const resellerData = docSnap.data();
+                    document.getElementById('reseller-credits-display').innerText = resellerData.credits;
+                }
+            });
+
+            // Rule 2 compliant query: Resellers can fetch and filter their own licensed items safely
+            onSnapshot(collection(db, rootRef + 'licenses'), (snap) => {
+                dbCache.keys = [];
+                snap.forEach(doc => {
+                    const lData = doc.data();
+                    if (lData.reseller_id === currentSessionUser.uid) {
+                        dbCache.keys.push({ id: doc.id, ...lData });
+                    }
+                });
+                renderResellerKeysTable();
+                calculateDashboardMetrics();
+            }, (err) => handleSyncError('reseller licenses', err));
+
+            // Product references list
+            onSnapshot(collection(db, rootRef + 'products'), (snap) => {
+                dbCache.products = [];
+                snap.forEach(doc => dbCache.products.push({ id: doc.id, ...doc.data() }));
+                updateProductSelectDropdowns();
+            });
+
+            // Announcements Stream
+            onSnapshot(collection(db, rootRef + 'announcements'), (snap) => {
+                dbCache.announcements = [];
+                snap.forEach(doc => dbCache.announcements.push({ id: doc.id, ...doc.data() }));
+                renderAnnouncementsAndNotices();
+            });
+
+            // Connection Logs filtered in-memory per RULE 2
+            onSnapshot(collection(db, rootRef + 'logs'), (snap) => {
+                dbCache.logs = [];
+                snap.forEach(doc => {
+                    const entry = doc.data();
+                    // Matching device logs that correspond to licenses generated by this reseller
+                    const matchKey = dbCache.keys.find(k => k.key === entry.key);
+                    if (matchKey) {
+                        dbCache.logs.push({ id: doc.id, ...entry });
+                    }
+                });
+                renderResellerClientTelemetryLogs();
+            });
+        }
+
+        function handleSyncError(collectionName, error) {
+            console.error(`Firebase Realtime stream failure for [${collectionName}]: `, error);
+        }
+
+        // =========================================================
+        // CALCULATION TRIGGERS (DASHBOARD ANALYTICS)
+        // =========================================================
+        function calculateDashboardMetrics() {
+            const keysList = dbCache.keys;
+            const now = new Date();
+
+            let activeCount = 0;
+            let bannedCount = 0;
+            let expiredCount = 0;
+
+            keysList.forEach(k => {
+                const isBanned = k.banned === true;
+                const expireAt = new Date(k.expire_at);
+                const isExpired = expireAt < now;
+
+                if (isBanned) bannedCount++;
+                else if (isExpired) expiredCount++;
+                else activeCount++;
+            });
+
+            // Total statistics
+            document.getElementById('stat-active-keys').innerText = activeCount;
+            document.getElementById('stat-total-keys').innerText = keysList.length;
+            document.getElementById('stat-banned-keys').innerText = bannedCount;
+            document.getElementById('stat-total-resellers').innerText = dbCache.resellers.length;
+
+            let totalCredits = 0;
+            dbCache.resellers.forEach(r => totalCredits += (r.credits || 0));
+            document.getElementById('stat-total-credits').innerText = totalCredits;
+
+            // Handshake logins count
+            document.getElementById('stat-total-logins').innerText = dbCache.logs.length;
+            document.getElementById('last-ping-time').innerText = "UPDATED " + new Date().toLocaleTimeString();
+        }
+
+        // =========================================================
+        // DATA RENDERING (KEY TABLES / CARD VIEWS / MODALS)
+        // =========================================================
+        
+        // ADMIN LICENSES TABLE RENDERING
+        function renderKeysTable(filteredKeys = null) {
+            const keys = filteredKeys || dbCache.keys;
+            const tableBody = document.getElementById('keys-table-body');
+            tableBody.innerHTML = '';
+
+            if (keys.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-400">NO SECURE LICENSES STORED IN SYSTEM RECORD</td></tr>`;
+                return;
+            }
+
+            keys.forEach(k => {
+                const now = new Date();
+                const expDate = new Date(k.expire_at);
+                const isExpired = expDate < now;
+                const isBanned = k.banned === true;
+
+                let badge = `<span class="bg-brutalGreen text-black brutal-border px-2 py-0.5 text-xs">ACTIVE</span>`;
+                if (isBanned) {
+                    badge = `<span class="bg-brutalPink text-white brutal-border px-2 py-0.5 text-xs">BANNED</span>`;
+                } else if (isExpired) {
+                    badge = `<span class="bg-black text-white brutal-border px-2 py-0.5 text-xs">EXPIRED</span>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = "bg-white dark:bg-brutalBgDark hover:bg-yellow-50 dark:hover:bg-zinc-800 transition-colors duration-150";
+                tr.innerHTML = `
+                    <td class="p-4 border border-black dark:border-white">
+                        <div class="font-mono text-base break-all flex items-center gap-2">
+                            <span>${k.key}</span>
+                            <button onclick="copyToClipboard('${k.key}')" class="text-xs text-gray-500 hover:text-black dark:hover:text-white" title="Copy Key"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                        <div class="text-[11px] text-gray-400 font-normal">Tag: ${k.note || 'None'}</div>
+                    </td>
+                    <td class="p-4 border border-black dark:border-white font-bold uppercase">${k.product}</td>
+                    <td class="p-4 border border-black dark:border-white">${k.reseller_name || 'Admin'}</td>
+                    <td class="p-4 border border-black dark:border-white font-normal">
+                        <div class="font-bold text-xs">Active Devices: ${k.login_count || 0}/${k.max_devices || 1}</div>
+                        <div class="font-mono text-[10px] text-zinc-400 truncate max-w-[150px]" title="${k.hwid || 'No hardware binded'}">HWID: ${k.hwid || 'UNBOUND'}</div>
+                    </td>
+                    <td class="p-4 border border-black dark:border-white">
+                        <div class="text-xs font-bold">${expDate.toLocaleDateString()}</div>
+                        <div class="text-[10px] text-gray-500 font-semibold">${expDate.toLocaleTimeString()}</div>
+                    </td>
+                    <td class="p-4 border border-black dark:border-white text-center">
+                        <div class="flex gap-1 justify-center">
+                            <button onclick="openEditKeyModal('${k.id}')" class="p-1.5 brutal-border bg-brutalCyan text-black hover:bg-sky-400 rounded" title="Edit Properties"><i class="fa-solid fa-pencil"></i></button>
+                            ${isBanned ? 
+                                `<button onclick="confirmAction('UNBAN LICENSE', 'Unban license keys ${k.key}?', () => setLicenseBanState('${k.id}', false))" class="p-1.5 brutal-border bg-brutalGreen text-black hover:bg-green-400 rounded" title="Unban License"><i class="fa-solid fa-unlock"></i></button>` :
+                                `<button onclick="confirmAction('BAN LICENSE', 'Are you sure you want to ban license ${k.key}?', () => setLicenseBanState('${k.id}', true))" class="p-1.5 brutal-border bg-brutalPink text-white hover:bg-rose-500 rounded" title="Ban License"><i class="fa-solid fa-ban"></i></button>`
+                            }
+                            <button onclick="confirmAction('RESET DEVICE HWID', 'Release hardware fingerprint of license ${k.key}?', () => resetLicenseHWID('${k.id}'))" class="p-1.5 brutal-border bg-brutalNeon text-black hover:bg-yellow-400 rounded" title="Reset HWID Link"><i class="fa-solid fa-rotate-right"></i></button>
+                            <button onclick="confirmAction('DESTROY LICENSE', 'Delete license key ${k.key}? This action is irreversible.', () => deleteLicenseKey('${k.id}'))" class="p-1.5 brutal-border bg-black text-white hover:bg-red-700 rounded" title="Delete Permanent"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // RESELLER OWN KEYS TABLE RENDERING
+        function renderResellerKeysTable(filteredKeys = null) {
+            const keys = filteredKeys || dbCache.keys;
+            const tableBody = document.getElementById('reseller-keys-table-body');
+            tableBody.innerHTML = '';
+
+            if (keys.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-400">NO ACTIVE KEYS CREATED BY YOU YET</td></tr>`;
+                return;
+            }
+
+            keys.forEach(k => {
+                const now = new Date();
+                const expDate = new Date(k.expire_at);
+                const isExpired = expDate < now;
+                const isBanned = k.banned === true;
+
+                let statusBadge = `<span class="bg-brutalGreen text-black brutal-border px-2 py-0.5 text-xs">ACTIVE</span>`;
+                if (isBanned) {
+                    statusBadge = `<span class="bg-brutalPink text-white brutal-border px-2 py-0.5 text-xs">BANNED</span>`;
+                } else if (isExpired) {
+                    statusBadge = `<span class="bg-black text-white brutal-border px-2 py-0.5 text-xs">EXPIRED</span>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = "bg-white dark:bg-brutalBgDark hover:bg-purple-50 dark:hover:bg-zinc-800 transition-colors duration-150";
+                tr.innerHTML = `
+                    <td class="p-4 border border-black dark:border-white">
+                        <div class="font-mono text-base break-all flex items-center gap-2 text-black dark:text-white">
+                            <span>${k.key}</span>
+                            <button onclick="copyToClipboard('${k.key}')" class="text-xs text-gray-500 hover:text-black dark:hover:text-white"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                        <div class="text-[11px] text-gray-400 font-semibold">${k.note || 'No identifier note'}</div>
+                    </td>
+                    <td class="p-4 border border-black dark:border-white uppercase font-bold text-black dark:text-white">${k.product}</td>
+                    <td class="p-4 border border-black dark:border-white font-mono text-xs max-w-[120px] truncate text-black dark:text-white" title="${k.hwid || 'Unbound'}">${k.hwid || 'UNBOUND'}</td>
+                    <td class="p-4 border border-black dark:border-white text-black dark:text-white">
+                        <div class="text-xs font-black">${expDate.toLocaleDateString()}</div>
+                        <div class="text-[10px] text-zinc-400">${expDate.toLocaleTimeString()}</div>
+                    </td>
+                    <td class="p-4 border border-black dark:border-white text-center">${statusBadge}</td>
+                    <td class="p-4 border border-black dark:border-white text-center">
+                        <button onclick="confirmAction('EXTEND KEY PASS', 'Add 7 Days validity to license ${k.key}? This costs nothing as reseller.', () => extendResellerLicenseTime('${k.id}'))" class="bg-brutalCyan text-black py-1.5 px-3 brutal-btn text-xs uppercase font-extrabold">
+                            Extend +7D
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // ADMIN RESELLER CARD LISTING
+        function renderResellersCards() {
+            const resellers = dbCache.resellers;
+            const container = document.getElementById('resellers-grid-container');
+            container.innerHTML = '';
+
+            if (resellers.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400 font-bold uppercase">NO PARTNERS REGISTERED</div>`;
+                return;
+            }
+
+            resellers.forEach(r => {
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-brutalBgDark p-6 brutal-border brutal-shadow flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start border-b-2 border-black pb-3 mb-4">
+                            <div>
+                                <h4 class="text-xl font-extrabold uppercase text-black dark:text-white">${r.username}</h4>
+                                <p class="text-xs text-gray-500 font-bold">${r.email}</p>
+                            </div>
+                            <span class="bg-brutalCyan text-black brutal-border text-xs px-2 py-0.5 font-bold uppercase">RESELLER</span>
+                        </div>
+                        <div class="space-y-2 mb-6">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500 font-bold">Ledger Balance:</span>
+                                <span class="font-extrabold bg-brutalNeon text-black border border-black px-2 rounded">${r.credits || 0} Credits</span>
+                            </div>
+                            <div class="flex justify-between text-sm text-black dark:text-white">
+                                <span class="text-gray-500 font-bold">Registered On:</span>
+                                <span>${new Date(r.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <div class="flex justify-between text-sm text-black dark:text-white">
+                                <span class="text-gray-500 font-bold">Active Licenses:</span>
+                                <span class="font-bold">${dbCache.keys.filter(k => k.reseller_id === r.uid).length} Keys</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 border-t-2 border-dashed border-black pt-4">
+                        <button onclick="openCreditAdjustmentModal('${r.uid}', '${r.username}')" class="flex-1 bg-brutalLilac text-black font-extrabold py-2 brutal-btn text-xs uppercase">
+                            <i class="fa-solid fa-circle-dollar-to-slot mr-1"></i> Credits
+                        </button>
+                        <button onclick="confirmAction('DELETE RESELLER', 'Delete reseller ${r.username}? This deletes partner access but keeps keys.', () => deleteResellerAccount('${r.uid}'))" class="bg-brutalPink text-white font-extrabold py-2 px-3 brutal-btn text-xs uppercase">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // MASTER PRODUCTS CARD LISTING
+        function renderProductsGrid() {
+            const products = dbCache.products;
+            const container = document.getElementById('products-grid-container');
+            container.innerHTML = '';
+
+            if (products.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400 font-bold uppercase">NO REGISTERED BINARIES FOUND</div>`;
+                return;
+            }
+
+            products.forEach(p => {
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-brutalBgDark p-6 brutal-border brutal-shadow flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start border-b-2 border-black pb-3 mb-4">
+                            <div>
+                                <h4 class="text-xl font-extrabold uppercase text-black dark:text-white">${p.product_name}</h4>
+                                <span class="text-[10px] bg-black text-white px-1.5 py-0.5 rounded font-mono">${p.product_code}</span>
+                            </div>
+                            <span class="inline-block w-4 h-4 rounded-full border-2 border-black ${p.active !== false ? 'bg-brutalGreen' : 'bg-brutalPink'}"></span>
+                        </div>
+                        <p class="text-xs text-gray-400 font-bold mb-4">System validates client handshakes matched with this unique product registry code.</p>
+                    </div>
+                    <div class="border-t-2 border-dashed border-black pt-4 flex gap-2">
+                        <button onclick="confirmAction('DELETE PRODUCT', 'Delete product registry ${p.product_name}?', () => deleteProductRegistry('${p.id}'))" class="w-full bg-brutalPink text-white font-extrabold py-2 brutal-btn text-xs uppercase">
+                            <i class="fa-solid fa-trash mr-1"></i> Destroy Registry
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // ANNOUNCEMENT BOARDS RENDERING
+        function renderAnnouncementsAndNotices() {
+            const list = dbCache.announcements;
+            const dashboardContainer = document.getElementById('dashboard-announcements');
+            const systemContainer = document.getElementById('announcements-grid-container');
+
+            // Dashboard Announcement Section (Sidebar widget)
+            dashboardContainer.innerHTML = '';
+            if (list.length === 0) {
+                dashboardContainer.innerHTML = `<p class="text-center text-gray-400 font-bold py-10">No public notices issued.</p>`;
+            } else {
+                list.forEach(a => {
+                    const el = document.createElement('div');
+                    el.className = "p-4 brutal-border bg-yellow-50 dark:bg-zinc-900 border-l-brutalPink border-l-8";
+                    el.innerHTML = `
+                        <h5 class="font-extrabold text-sm uppercase text-black dark:text-white">${a.title}</h5>
+                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-300 mt-1">${a.message}</p>
+                        <span class="text-[9px] text-gray-400 block mt-2 font-bold">${new Date(a.created_at).toLocaleDateString()} by ${a.created_by || 'Admin'}</span>
+                    `;
+                    dashboardContainer.appendChild(el);
+                });
+            }
+
+            // Dedicated Announcement Setup Tab (Full CRUD details)
+            systemContainer.innerHTML = '';
+            if (list.length === 0) {
+                systemContainer.innerHTML = `<div class="text-center py-10 text-gray-400 font-bold">NO BROADCASTED ANNOUNCEMENTS</div>`;
+                return;
+            }
+
+            list.forEach(a => {
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-brutalBgDark p-6 brutal-border brutal-shadow flex justify-between items-center";
+                card.innerHTML = `
+                    <div class="space-y-1 flex-1 pr-4">
+                        <h4 class="text-xl font-extrabold uppercase text-black dark:text-white">${a.title}</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">${a.message}</p>
+                        <span class="text-xs text-gray-400 block font-bold">Published: ${new Date(a.created_at).toLocaleString()} | Author: ${a.created_by || 'Admin'}</span>
+                    </div>
+                    ${auth.currentUser && dbCache.resellers.find(r => r.uid === auth.currentUser.uid) ? '' : 
+                        `<button onclick="confirmAction('DELETE BROADCAST', 'Delete public notice ${a.title}?', () => deleteAnnouncement('${a.id}'))" class="bg-brutalPink text-white font-extrabold py-2 px-4 brutal-btn text-xs uppercase">
+                            <i class="fa-solid fa-trash mr-1"></i> Delete Notice
+                        </button>`
+                    }
+                `;
+                systemContainer.appendChild(card);
+            });
+        }
+
+        // TELEMETRY LOGS LISTING (ADMIN DASHBOARD HANDSHAKES)
+        function renderTelemetryLogs() {
+            const logs = dbCache.logs;
+            const container = document.getElementById('dashboard-recent-logins');
+            container.innerHTML = '';
+
+            if (logs.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-400 font-bold py-10">No security Handshakes captured.</p>`;
+                return;
+            }
+
+            // Display latest logs on top
+            const sortedLogs = [...logs].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            sortedLogs.forEach(l => {
+                const date = new Date(l.timestamp);
+                const isFail = l.status !== 'success';
+                const pillColor = isFail ? 'bg-brutalPink text-white' : 'bg-brutalGreen text-black';
+
+                const logItem = document.createElement('div');
+                logItem.className = "p-3.5 brutal-border bg-gray-50 dark:bg-zinc-900 flex justify-between items-center text-xs";
+                logItem.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono font-bold text-black dark:text-white bg-gray-200 dark:bg-zinc-800 px-1 py-0.5 rounded break-all max-w-[120px] md:max-w-full truncate">${l.key}</span>
+                            <span class="${pillColor} font-black uppercase text-[9px] px-1.5 py-0.5 brutal-border-sm">${l.status}</span>
+                        </div>
+                        <div class="font-semibold text-gray-500">Device: ${l.device_brand || 'GENERIC'} ${l.device_model || 'MODEL'} // IP: ${l.ip || '127.0.0.1'}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-black dark:text-white">${date.toLocaleTimeString()}</div>
+                        <div class="text-[9px] text-gray-400 font-semibold">${date.toLocaleDateString()}</div>
+                    </div>
+                `;
+                container.appendChild(logItem);
+            });
+        }
+
+        // TELEMETRY LOGS LISTING (RESELLER VIEW)
+        function renderResellerClientTelemetryLogs() {
+            const logs = dbCache.logs;
+            const container = document.getElementById('reseller-logs-container');
+            container.innerHTML = '';
+
+            if (logs.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-400 font-bold py-10">No logins registered on your keys yet.</p>`;
+                return;
+            }
+
+            const sortedLogs = [...logs].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            sortedLogs.forEach(l => {
+                const date = new Date(l.timestamp);
+                const isFail = l.status !== 'success';
+                const pillColor = isFail ? 'bg-brutalPink text-white' : 'bg-brutalGreen text-black';
+
+                const item = document.createElement('div');
+                item.className = "p-4 brutal-border bg-white dark:bg-zinc-900 flex justify-between items-center text-xs";
+                item.innerHTML = `
+                    <div class="space-y-1 flex-1 pr-2">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="font-mono font-bold text-black dark:text-white bg-gray-200 dark:bg-zinc-800 px-1 py-0.5 break-all max-w-[140px] truncate">${l.key}</span>
+                            <span class="${pillColor} font-black uppercase text-[8px] px-1.5 py-0.5 brutal-border-sm">${l.status}</span>
+                        </div>
+                        <div class="font-semibold text-gray-500">Device Handshake: ${l.device_brand || 'Generic'} ${l.device_model || 'Device'}</div>
+                        <div class="font-mono text-[9px] text-gray-400 truncate max-w-[200px]" title="${l.hwid}">HWID Signature: ${l.hwid}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-black dark:text-white">${date.toLocaleDateString()}</div>
+                        <div class="text-[10px] text-zinc-400">${date.toLocaleTimeString()}</div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // =========================================================
+        // VIEW UPDATE UTILS (DROPDOWNS / LABELS / SETTINGS FORM)
+        // =========================================================
+        function updateProductSelectDropdowns() {
+            const products = dbCache.products;
+            const keyGenProductDropdown = document.getElementById('gen-key-product');
+            const filterProductDropdown = document.getElementById('filter-key-product');
+            const resellerGenProductDropdown = document.getElementById('reseller-gen-product');
+
+            const generateOptions = products.map(p => `<option value="${p.product_code}">${p.product_name}</option>`).join('');
+            const filterOptions = `<option value="">All Products</option>` + products.map(p => `<option value="${p.product_code}">${p.product_name}</option>`).join('');
+
+            if (keyGenProductDropdown) keyGenProductDropdown.innerHTML = generateOptions;
+            if (resellerGenProductDropdown) resellerGenProductDropdown.innerHTML = generateOptions;
+            if (filterProductDropdown) filterProductDropdown.innerHTML = filterOptions;
+        }
+
+        function updateResellerOwnerDropdowns() {
+            const resellers = dbCache.resellers;
+            const ownerDropdown = document.getElementById('gen-key-owner');
+            const editOwnerDropdown = document.getElementById('edit-key-owner');
+
+            const options = `<option value="admin">System Administration (Self)</option>` + 
+                resellers.map(r => `<option value="${r.uid}">${r.username} (${r.email})</option>`).join('');
+
+            if (ownerDropdown) ownerDropdown.innerHTML = options;
+            if (editOwnerDropdown) editOwnerDropdown.innerHTML = options;
+        }
+
+        function renderGlobalSystemSettingsView() {
+            const globalSet = dbCache.settings;
+            // Target the global config document 'global_config' inside collection settings
+            const docData = globalSet['global_config'];
+            if (!docData) return;
+
+            document.getElementById('setting-version').value = docData.version || 'v1.0.0';
+            document.getElementById('setting-support').value = docData.support_link || '';
+
+            // Render maintenance UI button state
+            const maintBtn = document.getElementById('btn-toggle-maintenance');
+            if (docData.maintenance === true) {
+                maintBtn.className = "p-3 brutal-border font-extrabold bg-brutalPink text-white brutal-btn w-full uppercase";
+                maintBtn.innerText = "MAINTENANCE: EMERGENCY ACTIVE";
+                
+                // Show announcement banner
+                document.getElementById('global-announcement-banner').classList.remove('hidden');
+                document.getElementById('banner-message').innerText = "SYSTEM MAINTENANCE: Secure Native Handshakes are offline.";
+            } else {
+                maintBtn.className = "p-3 brutal-border font-extrabold bg-white text-black brutal-btn w-full uppercase hover:bg-gray-50";
+                maintBtn.innerText = "SET SYSTEM TO MAINTENANCE";
+                document.getElementById('global-announcement-banner').classList.add('hidden');
+            }
+
+            // Global logins trigger toggle button
+            const loginBtn = document.getElementById('btn-toggle-logins');
+            if (docData.login_enabled !== false) {
+                loginBtn.className = "p-3 brutal-border font-extrabold bg-brutalGreen text-black brutal-btn w-full uppercase";
+                loginBtn.innerText = "AUTHENTICATION HANDSHAKES: ENABLED";
+            } else {
+                loginBtn.className = "p-3 brutal-border font-extrabold bg-brutalPink text-white brutal-btn w-full uppercase";
+                loginBtn.innerText = "AUTHENTICATION HANDSHAKES: RESTRICTED";
+            }
+        }
+
+        // =========================================================
+        // SEARCH AND IN-MEMORY FILTERS (RULE 2 ENFORCEMENT)
+        // =========================================================
+        window.applyKeysFilters = function() {
+            const searchVal = document.getElementById('filter-key-search').value.toLowerCase();
+            const productVal = document.getElementById('filter-key-product').value;
+            const statusVal = document.getElementById('filter-key-status').value;
+            const now = new Date();
+
+            const filtered = dbCache.keys.filter(k => {
+                // Search match
+                const matchSearch = k.key.toLowerCase().includes(searchVal) || 
+                    (k.note && k.note.toLowerCase().includes(searchVal)) ||
+                    (k.hwid && k.hwid.toLowerCase().includes(searchVal));
+                
+                // Product match
+                const matchProduct = productVal === "" || k.product === productVal;
+
+                // Status Match
+                let matchStatus = true;
+                const isExpired = new Date(k.expire_at) < now;
+                const isBanned = k.banned === true;
+
+                if (statusVal === "active") {
+                    matchStatus = !isBanned && !isExpired;
+                } else if (statusVal === "banned") {
+                    matchStatus = isBanned;
+                } else if (statusVal === "expired") {
+                    matchStatus = isExpired;
+                }
+
+                return matchSearch && matchProduct && matchStatus;
+            });
+
+            renderKeysTable(filtered);
+        };
+
+        window.applyResellerFilters = function() {
+            const searchVal = document.getElementById('filter-reseller-search').value.toLowerCase();
+            const filtered = dbCache.resellers.filter(r => {
+                return r.username.toLowerCase().includes(searchVal) || r.email.toLowerCase().includes(searchVal);
+            });
+            
+            const container = document.getElementById('resellers-grid-container');
+            container.innerHTML = '';
+            filtered.forEach(r => {
+                // Reuse existing card template generator
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-brutalBgDark p-6 brutal-border brutal-shadow flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start border-b-2 border-black pb-3 mb-4">
+                            <div>
+                                <h4 class="text-xl font-extrabold uppercase text-black dark:text-white">${r.username}</h4>
+                                <p class="text-xs text-gray-500 font-bold">${r.email}</p>
+                            </div>
+                            <span class="bg-brutalCyan text-black brutal-border text-xs px-2 py-0.5 font-bold uppercase">RESELLER</span>
+                        </div>
+                        <div class="space-y-2 mb-6">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500 font-bold">Ledger Balance:</span>
+                                <span class="font-extrabold bg-brutalNeon text-black border border-black px-2 rounded">${r.credits || 0} Credits</span>
+                            </div>
+                            <div class="flex justify-between text-sm text-black dark:text-white">
+                                <span class="text-gray-500 font-bold">Registered On:</span>
+                                <span>${new Date(r.created_at).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 border-t-2 border-dashed border-black pt-4">
+                        <button onclick="openCreditAdjustmentModal('${r.uid}', '${r.username}')" class="flex-1 bg-brutalLilac text-black font-extrabold py-2 brutal-btn text-xs uppercase">
+                            <i class="fa-solid fa-circle-dollar-to-slot mr-1"></i> Credits
+                        </button>
+                        <button onclick="confirmAction('DELETE RESELLER', 'Delete reseller ${r.username}?', () => deleteResellerAccount('${r.uid}'))" class="bg-brutalPink text-white font-extrabold py-2 px-3 brutal-btn text-xs uppercase">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        };
+
+        window.applyResellerKeysFilters = function() {
+            const searchVal = document.getElementById('filter-reseller-keys-search').value.toLowerCase();
+            const filtered = dbCache.keys.filter(k => {
+                return k.key.toLowerCase().includes(searchVal) || (k.note && k.note.toLowerCase().includes(searchVal));
+            });
+            renderResellerKeysTable(filtered);
+        };
+
+        // =========================================================
+        // DATA MUTATIONS (WRITE ACTIONS USING RULE 1 PROTECTED PATHS)
+        // =========================================================
+
+        // Generate License keys as system administrator
+        window.submitKeyGeneration = async function() {
+            const product = document.getElementById('gen-key-product').value;
+            const durationDays = parseInt(document.getElementById('gen-key-duration').value);
+            const qty = parseInt(document.getElementById('gen-key-qty').value);
+            const maxDevices = parseInt(document.getElementById('gen-key-devices').value);
+            const ownerId = document.getElementById('gen-key-owner').value;
+            const note = document.getElementById('gen-key-note').value;
+
+            let resellerName = 'Admin';
+            if (ownerId !== 'admin') {
+                const found = dbCache.resellers.find(r => r.uid === ownerId);
+                if (found) resellerName = found.username;
+            }
+
+            try {
+                showToast(`Generating ${qty} License crypts...`, 'info');
+                
+                const writePromises = [];
+                for (let i = 0; i < qty; i++) {
+                    const randomKey = "KMS-" + generateSecureKeySegment() + "-" + generateSecureKeySegment() + "-" + generateSecureKeySegment();
+                    
+                    const expireAt = new Date();
+                    expireAt.setDate(expireAt.getDate() + durationDays);
+
+                    // Structured document payload matching requested Firestore Schema
+                    const lPayload = {
+                        key: randomKey,
+                        product: product,
+                        active: true,
+                        banned: false,
+                        hwid: "",
+                        note: note || "Admin Manual Issue",
+                        reseller_id: ownerId,
+                        reseller_name: resellerName,
+                        duration_days: durationDays,
+                        created_at: new Date().toISOString(),
+                        expire_at: expireAt.toISOString(),
+                        login_count: 0,
+                        max_devices: maxDevices
+                    };
+
+                    const lDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'licenses', randomKey);
+                    writePromises.push(setDoc(lDocRef, lPayload));
+                }
+
+                await Promise.all(writePromises);
+                showToast(`Successfully registered ${qty} licenses!`, 'success');
+                closeModal('modal-generate-key');
+            } catch (error) {
+                console.error(error);
+                showToast("Key deployment error", "error");
+            }
+        };
+
+        // Reseller key minting (deducting credit)
+        window.submitResellerKeyMinting = async function() {
+            const product = document.getElementById('reseller-gen-product').value;
+            const durationDays = parseInt(document.getElementById('reseller-gen-duration').value);
+            const maxDevices = parseInt(document.getElementById('reseller-gen-devices').value);
+            const note = document.getElementById('reseller-gen-note').value;
+
+            // Fetch reseller profile
+            const refResDoc = doc(db, 'artifacts', appId, 'public', 'data', 'resellers', currentSessionUser.uid);
+            const resSnap = await getDoc(refResDoc);
+            
+            if (!resSnap.exists()) {
+                showToast("Reseller profile error", "error");
+                return;
+            }
+
+            const resData = resSnap.data();
+            if ((resData.credits || 0) < 1) {
+                showToast("Insufficient credits in ledger wallet!", "error");
+                return;
+            }
+
+            try {
+                const generatedLicenseKey = "KMS-" + generateSecureKeySegment() + "-" + generateSecureKeySegment() + "-" + generateSecureKeySegment();
+                const expDate = new Date();
+                expDate.setDate(expDate.getDate() + durationDays);
+
+                const lPayload = {
+                    key: generatedLicenseKey,
+                    product: product,
+                    active: true,
+                    banned: false,
+                    hwid: "",
+                    note: note || "Issued by Reseller " + resData.username,
+                    reseller_id: currentSessionUser.uid,
+                    reseller_name: resData.username,
+                    duration_days: durationDays,
+                    created_at: new Date().toISOString(),
+                    expire_at: expDate.toISOString(),
+                    login_count: 0,
+                    max_devices: maxDevices
+                };
+
+                // Transactional sequential writes: 1. Create key document. 2. Deduct credits from balance.
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'licenses', generatedLicenseKey), lPayload);
+                await updateDoc(refResDoc, {
+                    credits: increment(-1),
+                    generated_keys: increment(1)
+                });
+
+                showToast(`License key minted: ${generatedLicenseKey}`, 'success');
+                closeModal('modal-reseller-generate');
+            } catch (error) {
+                console.error(error);
+                showToast("Failed to complete mint transaction", "error");
+            }
+        };
+
+        // Create Reseller Partner Account (Writing directly to authorized resellers path)
+        window.submitResellerCreation = async function() {
+            const username = document.getElementById('reseller-username').value.trim();
+            const email = document.getElementById('reseller-email').value.trim();
+            const pass = document.getElementById('reseller-password').value;
+            const creds = parseInt(document.getElementById('reseller-initial-credits').value);
+
+            try {
+                // Since Firebase client SDK doesn't allow generating user auth from within administrative session without kickout,
+                // we mock register partner profile with generated uid or write record so that when partner logs in, auth maps.
+                // In production, your firebase cloud function handles backend user registration securely.
+                const simulatedUid = "partner_" + generateSecureKeySegment().toLowerCase() + "_" + generateSecureKeySegment().toLowerCase();
+                
+                const rPayload = {
+                    uid: simulatedUid,
+                    username: username,
+                    email: email,
+                    credits: creds,
+                    active: true,
+                    created_at: new Date().toISOString(),
+                    last_login: "",
+                    generated_keys: 0,
+                    sold_keys: 0
+                };
+
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'resellers', simulatedUid), rPayload);
+                showToast(`Reseller ${username} registry created!`, 'success');
+                closeModal('modal-create-reseller');
+            } catch (error) {
+                console.error(error);
+                showToast("Failed to write reseller profile", "error");
+            }
+        };
+
+        // Credit Ledger Allocation adjustments
+        window.submitCreditModification = async function() {
+            const rUid = document.getElementById('credit-target-uid').value;
+            const type = document.getElementById('credit-action-type').value;
+            const amount = parseInt(document.getElementById('credit-amount').value);
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'resellers', rUid);
+                
+                if (type === 'add') {
+                    await updateDoc(docRef, { credits: increment(amount) });
+                } else if (type === 'remove') {
+                    await updateDoc(docRef, { credits: increment(-amount) });
+                } else {
+                    await updateDoc(docRef, { credits: amount });
+                }
+
+                showToast("Digital balance records synchronized", "success");
+                closeModal('modal-manage-credits');
+            } catch (error) {
+                console.error(error);
+                showToast("Credit database failed", "error");
+            }
+        };
+
+        // Create New Product System Item
+        window.submitProductCreation = async function() {
+            const name = document.getElementById('product-name').value.trim();
+            const code = document.getElementById('product-code').value.trim().toUpperCase().replace(/\s+/g, '_');
+
+            try {
+                const pPayload = {
+                    product_name: name,
+                    product_code: code,
+                    active: true,
+                    duration_options: [1, 7, 30, 365]
+                };
+
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', code), pPayload);
+                showToast(`Product ${name} initialized`, 'success');
+                closeModal('modal-create-product');
+            } catch (error) {
+                console.error(error);
+                showToast("Product registry failed", "error");
+            }
+        };
+
+        // Create Announcement Broadcast
+        window.submitAnnouncementCreation = async function() {
+            const title = document.getElementById('announce-title').value.trim();
+            const message = document.getElementById('announce-message').value.trim();
+
+            try {
+                const uniqueId = "notice_" + Date.now();
+                const aPayload = {
+                    title: title,
+                    message: message,
+                    created_at: new Date().toISOString(),
+                    created_by: currentSessionUser.email ? currentSessionUser.email.split('@')[0] : 'Admin'
+                };
+
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'announcements', uniqueId), aPayload);
+                showToast("Notice broadcasted successfully!", "success");
+                closeModal('modal-create-announcement');
+            } catch (error) {
+                console.error(error);
+                showToast("Announcement database failed", "error");
+            }
+        };
+
+        // Edit Key Properties submission
+        window.submitEditKey = async function() {
+            const kId = document.getElementById('edit-key-id').value;
+            const maxDevices = parseInt(document.getElementById('edit-key-devices').value);
+            const ownerId = document.getElementById('edit-key-owner').value;
+            const note = document.getElementById('edit-key-note').value;
+
+            let resellerName = 'Admin';
+            if (ownerId !== 'admin') {
+                const found = dbCache.resellers.find(r => r.uid === ownerId);
+                if (found) resellerName = found.username;
+            }
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'licenses', kId);
+                await updateDoc(docRef, {
+                    max_devices: maxDevices,
+                    reseller_id: ownerId,
+                    reseller_name: resellerName,
+                    note: note
+                });
+                showToast("License edits successfully written", "success");
+                closeModal('modal-edit-key');
+            } catch (error) {
+                console.error(error);
+                showToast("Could not modify key metadata", "error");
+            }
+        };
+
+        // Ban / Unban License
+        window.setLicenseBanState = async function(kId, isBanned) {
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'licenses', kId);
+                await updateDoc(docRef, { banned: isBanned });
+                showToast(`License keys updated [BANNED = ${isBanned}]`, 'success');
+            } catch (err) {
+                showToast("Failed to switch license restrictions", "error");
+            }
+        };
+
+        // Reset HWID fingerprints
+        window.resetLicenseHWID = async function(kId) {
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'licenses', kId);
+                await updateDoc(docRef, { hwid: "", login_count: 0 });
+                showToast("HWID signatures released!", "success");
+            } catch (err) {
+                showToast("Unable to reset hwid locks", "error");
+            }
+        };
+
+        // Delete permanently
+        window.deleteLicenseKey = async function(kId) {
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'licenses', kId);
+                await deleteDoc(docRef);
+                showToast("License key erased completely", "success");
+            } catch (err) {
+                showToast("Database deletion failure", "error");
+            }
+        };
+
+        // Reseller extends its own generated key by 7 days
+        window.extendResellerLicenseTime = async function(kId) {
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'licenses', kId);
+                const snap = await getDoc(docRef);
+                if (!snap.exists()) return;
+
+                const data = snap.data();
+                const expDate = new Date(data.expire_at);
+                expDate.setDate(expDate.getDate() + 7);
+
+                await updateDoc(docRef, {
+                    expire_at: expDate.toISOString(),
+                    duration_days: increment(7)
+                });
+
+                showToast("License extended successfully!", "success");
+            } catch (err) {
+                showToast("Failed to alter expiration", "error");
+            }
+        };
+
+        // Delete Reseller
+        window.deleteResellerAccount = async function(rUid) {
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'resellers', rUid);
+                await deleteDoc(docRef);
+                showToast("Reseller reference terminated", "success");
+            } catch (error) {
+                showToast("Error erasing reseller record", "error");
+            }
+        };
+
+        // Delete Product registry
+        window.deleteProductRegistry = async function(pId) {
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'products', pId);
+                await deleteDoc(docRef);
+                showToast("Product registry removed", "success");
+            } catch (error) {
+                showToast("Product registry removal failed", "error");
+            }
+        };
+
+        // Delete announcement Notice
+        window.deleteAnnouncement = async function(aId) {
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'announcements', aId);
+                await deleteDoc(docRef);
+                showToast("Notice message deleted", "success");
+            } catch (err) {
+                showToast("Deletion error", "error");
+            }
+        };
+
+        // Update System configuration settings
+        window.saveGlobalSettings = async function() {
+            const version = document.getElementById('setting-version').value;
+            const support = document.getElementById('setting-support').value;
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global_config');
+                await updateDoc(docRef, {
+                    version: version,
+                    support_link: support
+                });
+                showToast("System configurations saved", "success");
+            } catch (error) {
+                showToast("Error altering global configuration", "error");
+            }
+        };
+
+        // Toggle maintenance override
+        window.toggleMaintenanceState = async function() {
+            const currentMaint = dbCache.settings['global_config']?.maintenance || false;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global_config');
+                await updateDoc(docRef, { maintenance: !currentMaint });
+                showToast(`System lockdown status updated!`, 'success');
+            } catch (err) {
+                showToast("Security lockdown switch error", "error");
+            }
+        };
+
+        // Toggle login handshakes
+        window.toggleGlobalLoginsState = async function() {
+            const currentVal = dbCache.settings['global_config']?.login_enabled !== false;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global_config');
+                await updateDoc(docRef, { login_enabled: !currentVal });
+                showToast(`Connection handshake validation changed`, 'success');
+            } catch (err) {
+                showToast("Failed to restrict authentications", "error");
+            }
+        };
+
+        // =========================================================
+        // SIGN IN / SESSION SIGN OUT HANDLERS
+        // =========================================================
+        window.handleUserLogout = async function() {
+            try {
+                await signOut(auth);
+                showToast("KMS Security session terminated.", "info");
+            } catch (err) {
+                showToast("Logout failed", "error");
+            }
+        };
+
+        // =========================================================
+        // SECURITY UTILITIES (SECURE KEY GENERATION, ENCRYPTION SEED)
+        // =========================================================
+        function generateSecureKeySegment() {
+            return Math.random().toString(36).substring(2, 6).toUpperCase() + Math.random().toString(36).substring(2, 6).toUpperCase();
+        }
+
+        // =========================================================
+        // UTILS & HELPER GRAPHICS (EXPORT, CLIPBOARD, DARK MODE)
+        // =========================================================
+        window.copyToClipboard = function(text) {
+            // Compatibility bypass
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+            showToast("Copied to clipboard!", "success");
+        };
+
+        window.exportKeysToCSV = function() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Key,Product,Reseller,MaxDevices,HWID,Status,Expiration\r\n";
+
+            dbCache.keys.forEach(k => {
+                const now = new Date();
+                const expDate = new Date(k.expire_at);
+                const isExpired = expDate < now;
+                const isBanned = k.banned === true;
+                const status = isBanned ? "Banned" : isExpired ? "Expired" : "Active";
+
+                csvContent += `${k.key},${k.product},${k.reseller_name || 'Admin'},${k.max_devices},${k.hwid || 'None'},${status},${k.expire_at}\r\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `kms_export_${Date.now()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("CSV exported successfully", "success");
+        };
+
+        window.toggleDarkMode = function() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                showToast("System Theme: Light Contrast", "info");
+            } else {
+                html.classList.add('dark');
+                showToast("System Theme: Dark Contrast", "info");
+            }
+        };
+
+        window.togglePasswordVisibility = function(id) {
+            const input = document.getElementById(id);
+            if (input.type === 'password') {
+                input.type = 'text';
+            } else {
+                input.type = 'password';
+            }
+        };
+
+        // =========================================================
+        // MODALS HANDLING SYSTEM
+        // =========================================================
+        window.openKeyGeneratorModal = function() {
+            document.getElementById('modal-generate-key').classList.remove('hidden');
+        };
+
+        window.openResellerCreatorModal = function() {
+            document.getElementById('modal-create-reseller').classList.remove('hidden');
+        };
+
+        window.openProductCreatorModal = function() {
+            document.getElementById('modal-create-product').classList.remove('hidden');
+        };
+
+        window.openAnnouncementCreatorModal = function() {
+            document.getElementById('modal-create-announcement').classList.remove('hidden');
+        };
+
+        window.openResellerKeyGeneratorModal = function() {
+            document.getElementById('modal-reseller-generate').classList.remove('hidden');
+        };
+
+        window.openCreditAdjustmentModal = function(uid, username) {
+            document.getElementById('credit-target-uid').value = uid;
+            document.getElementById('credit-target-username').innerText = username;
+            document.getElementById('modal-manage-credits').classList.remove('hidden');
+        };
+
+        window.openEditKeyModal = function(id) {
+            const found = dbCache.keys.find(k => k.id === id);
+            if (!found) return;
+
+            document.getElementById('edit-key-id').value = id;
+            document.getElementById('edit-key-display').value = found.key;
+            document.getElementById('edit-key-devices').value = found.max_devices || 1;
+            document.getElementById('edit-key-owner').value = found.reseller_id || 'admin';
+            document.getElementById('edit-key-note').value = found.note || '';
+
+            document.getElementById('modal-edit-key').classList.remove('hidden');
+        };
+
+        window.closeModal = function(id) {
+            document.getElementById(id).classList.add('hidden');
+        };
+
+        // GLOBAL DYNAMIC SYSTEM CONFIRMATION
+        let pendingConfirmAction = null;
+        window.confirmAction = function(title, message, callback) {
+            document.getElementById('confirm-title').innerText = title;
+            document.getElementById('confirm-message').innerText = message;
+            document.getElementById('modal-confirm').classList.remove('hidden');
+            pendingConfirmAction = callback;
+        };
+
+        document.getElementById('confirm-btn-yes').onclick = function() {
+            if (pendingConfirmAction) {
+                pendingConfirmAction();
+            }
+            closeModal('modal-confirm');
+        };
+
+        // TOAST ENGINE INJECTOR
+        window.showToast = function(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bg = 'bg-brutalNeon text-black';
+            if (type === 'error') bg = 'bg-brutalPink text-white';
+            if (type === 'info') bg = 'bg-brutalCyan text-black';
+            if (type === 'success') bg = 'bg-brutalGreen text-black';
+
+            toast.className = `${bg} p-4 brutal-border brutal-shadow-sm font-bold text-sm tracking-tight transition-all duration-300 transform translate-y-2 opacity-0 flex justify-between items-center`;
+            toast.innerHTML = `
+                <span>${message}</span>
+                <button class="ml-4 hover:scale-110 font-black"><i class="fa-solid fa-xmark"></i></button>
+            `;
+
+            // Dismiss trigger
+            toast.querySelector('button').onclick = () => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            };
+
+            container.appendChild(toast);
+
+            // Animate In
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            // Auto purge after 4s
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        };
+
+    </script>
+</body>
+</html>
